@@ -1,13 +1,25 @@
-//! Spike: a context menu, a popover and a tooltip from Zed's `ui`, to show it works outside Zed.
-//! Replaced by the design system (PLAN.md 1.4).
+//! Spike: a context menu, a popover and a tooltip from Zed's `ui`, to show it works outside Zed,
+//! and our text input to try it by hand. Replaced by the design system (PLAN.md 1.4).
 
-use gpui::{DismissEvent, EventEmitter, FocusHandle, Focusable};
+use gpui::{DismissEvent, Entity, EventEmitter, FocusHandle, Focusable};
 use theme::ActiveTheme as _;
 use zed_ui::{
     Button, ContextMenu, Label, Popover, PopoverMenu, Tooltip, prelude::*, right_click_menu, v_flex,
 };
 
-pub struct Demo;
+use crate::design::text_input::TextInput;
+
+pub struct Demo {
+    input: Entity<TextInput>,
+}
+
+impl Demo {
+    pub fn new(cx: &mut Context<Self>) -> Self {
+        Self {
+            input: cx.new(|cx| TextInput::new("Type here…", cx)),
+        }
+    }
+}
 
 impl Render for Demo {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
@@ -38,6 +50,7 @@ impl Render for Demo {
                 Button::new("tooltip-trigger", "Hover for a tooltip")
                     .tooltip(Tooltip::text("A tooltip from Zed's ui")),
             )
+            .child(div().w_80().child(self.input.clone()))
     }
 }
 
