@@ -10,7 +10,10 @@ deny = [
     { crate = "mailapp-ui", wrappers = ["mailapp"], reason = "only the mailapp executable opens the UI" },
     { crate = "mailapp-mail-render", wrappers = ["mailapp-ui"], reason = "mail-render is a piece of the UI" },
     { crate = "apple-native-keyring-store", wrappers = ["mailapp-secrets"], reason = "only the secrets adapter talks to the OS secret store" },
+    { crate = "async-imap", wrappers = ["mailapp-imap"], reason = "only the IMAP adapter talks IMAP" },
     { crate = "keyring-core", wrappers = ["apple-native-keyring-store", "mailapp-secrets", "windows-native-keyring-store"], reason = "only the secrets adapter talks to the OS secret store" },
     { crate = "rusqlite", wrappers = ["mailapp-sqlite"], reason = "only the sqlite adapter talks to the database" },
+    { crate = "rustls-platform-verifier", wrappers = ["mailapp-imap"], reason = "only network adapters open TLS connections" },
+    { crate = "tokio-rustls", wrappers = ["mailapp-imap"], reason = "only network adapters open TLS connections" },
     { crate = "windows-native-keyring-store", wrappers = ["mailapp-secrets"], reason = "only the secrets adapter talks to the OS secret store" },
 ]

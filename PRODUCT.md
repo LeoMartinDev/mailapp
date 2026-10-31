@@ -381,6 +381,7 @@ Package names are prefixed `mailapp-` (`mailapp-core`, `mailapp-imap`…); the e
 | HTML rendering | `blitz-dom` / `blitz-html` + `anyrender_vello_cpu` (pinned fork) |
 | Async network | `tokio` |
 | IMAP | `async-imap` |
+| TLS | `tokio-rustls` (ring) + `rustls-platform-verifier` (the OS's trusted certificates) |
 | SMTP | `lettre` |
 | JMAP (v1) | `jmap-client` |
 | MIME | `mail-parser`, `mail-builder` |
