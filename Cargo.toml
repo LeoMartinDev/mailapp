@@ -28,4 +28,5 @@ mailapp-mail-render = { path = "crates/mail-render" }
 mailapp-sqlite = { path = "crates/infrastructure/sqlite" }
 mailapp-ui = { path = "crates/ui" }
 theme = { git = "https://github.com/zed-industries/zed", rev = "c4273271092b0287f7d181f616bd5171e0a2f70c" }
+unicode-segmentation = "1.13.3"
 zed_ui = { git = "https://github.com/zed-industries/zed", rev = "c4273271092b0287f7d181f616bd5171e0a2f70c", package = "ui" }
