@@ -11,5 +11,6 @@ deny = [
     { crate = "mailapp-mail-render", wrappers = ["mailapp-ui"], reason = "mail-render is a piece of the UI" },
     { crate = "apple-native-keyring-store", wrappers = ["mailapp-secrets"], reason = "only the secrets adapter talks to the OS secret store" },
     { crate = "keyring-core", wrappers = ["apple-native-keyring-store", "mailapp-secrets", "windows-native-keyring-store"], reason = "only the secrets adapter talks to the OS secret store" },
+    { crate = "rusqlite", wrappers = ["mailapp-sqlite"], reason = "only the sqlite adapter talks to the database" },
     { crate = "windows-native-keyring-store", wrappers = ["mailapp-secrets"], reason = "only the secrets adapter talks to the OS secret store" },
 ]
