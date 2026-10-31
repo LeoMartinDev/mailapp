@@ -15,3 +15,6 @@ blitz-traits.workspace = true
 futures.workspace = true
 gpui.workspace = true
 image.workspace = true
+
+[dev-dependencies]
+gpui_platform.workspace = true
