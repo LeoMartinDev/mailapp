@@ -39,6 +39,8 @@ actions!(
         SelectHome,
         SelectEnd,
         SelectAll,
+        Undo,
+        Redo,
         Copy,
         Cut,
         Paste,
@@ -70,6 +72,8 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("shift-home", SelectHome, context),
         KeyBinding::new("shift-end", SelectEnd, context),
         KeyBinding::new("secondary-a", SelectAll, context),
+        KeyBinding::new("secondary-z", Undo, context),
+        KeyBinding::new("secondary-shift-z", Redo, context),
         KeyBinding::new("secondary-c", Copy, context),
         KeyBinding::new("secondary-x", Cut, context),
         KeyBinding::new("secondary-v", Paste, context),
@@ -84,6 +88,8 @@ pub fn bind_keys(cx: &mut App) {
         // Without a menu bar, nothing else opens the emoji picker.
         KeyBinding::new("ctrl-cmd-space", ShowCharacterPalette, context),
     ]);
+    #[cfg(not(target_os = "macos"))]
+    cx.bind_keys([KeyBinding::new("ctrl-y", Redo, context)]);
 }
 
 pub struct TextInput {
@@ -132,15 +138,13 @@ impl TextInput {
     fn cut(&mut self, _: &Cut, window: &mut Window, cx: &mut Context<Self>) {
         if !self.buffer.selection().is_empty() {
             self.copy(&Copy, window, cx);
-            self.edit(window, cx, Buffer::delete_backward);
+            self.edit(window, cx, |buffer| buffer.replace_selection(""));
         }
     }
 
     fn paste(&mut self, _: &Paste, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(text) = cx.read_from_clipboard().and_then(|item| item.text()) {
-            self.edit(window, cx, |buffer| {
-                buffer.replace_text_in_range(None, &text)
-            });
+            self.edit(window, cx, |buffer| buffer.replace_selection(&text));
         }
     }
 
@@ -325,6 +329,8 @@ impl Render for TextInput {
             .on_action(on::<SelectHome>(cx, |b| b.select_to(0)))
             .on_action(on::<SelectEnd>(cx, |b| b.select_to(b.text().len())))
             .on_action(on::<SelectAll>(cx, Buffer::select_all))
+            .on_action(on::<Undo>(cx, Buffer::undo))
+            .on_action(on::<Redo>(cx, Buffer::redo))
             .on_action(cx.listener(Self::copy))
             .on_action(cx.listener(Self::cut))
             .on_action(cx.listener(Self::paste))
