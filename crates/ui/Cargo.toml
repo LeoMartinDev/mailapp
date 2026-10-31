@@ -6,5 +6,9 @@ license.workspace = true
 publish.workspace = true
 
 [dependencies]
+gpui.workspace = true
+gpui_platform.workspace = true
 mailapp-core.workspace = true
 mailapp-mail-render.workspace = true
+theme.workspace = true
+zed_ui.workspace = true

@@ -1,0 +1,10 @@
+# Architecture rule (PRODUCT.md §8.1), checked in CI by `cargo deny --config deny-core.toml check bans`:
+# the core and the infrastructure crates never reach GPUI, not even through another crate.
+# The graph is every workspace crate except the UI side below, so a new crate is checked by default.
+
+[graph]
+exclude = ["mailapp", "mailapp-mail-render", "mailapp-ui"]
+
+[bans]
+# Zed's ui, theme… all depend on gpui, so this one rule bans them too.
+deny = [{ crate = "gpui", reason = "GPUI and Zed's crates belong to the UI" }]
