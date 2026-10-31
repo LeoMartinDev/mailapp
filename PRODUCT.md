@@ -353,7 +353,7 @@ crates/
     smtp/                lettre
     microsoft/           OAuth2; Graph backend in v1
     jmap/                v1 (jmap-client)
-    secrets/             keyring
+    secrets/             keyring-core + native stores
     contacts-macos/  contacts-carddav/  contacts-microsoft/
     agent-anthropic/  agent-openai-compat/  agent-cli/
   ui/                    GPUI: design system (design/), screens and view-models (screens/), i18n
@@ -386,7 +386,7 @@ Package names are prefixed `mailapp-` (`mailapp-core`, `mailapp-imap`…); the e
 | MIME | `mail-parser`, `mail-builder` |
 | OAuth2 | `oauth2` |
 | Storage | `rusqlite` with bundled SQLCipher, FTS5 |
-| Secrets | `keyring` |
+| Secrets | `keyring-core` + `apple-native-keyring-store`, `windows-native-keyring-store` (keyring-rs) |
 | i18n | `fluent` |
 
 ## 11. Testing
