@@ -38,6 +38,11 @@ jobs:
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
           command-arguments: bans
+      # Core and infrastructure never reach GPUI, even through another crate (deny-core.toml).
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          arguments: --all-features --config deny-core.toml
+          command-arguments: bans
 
   # Core crates must stay mobile-ready (PRODUCT.md §8.7).
   ios:
