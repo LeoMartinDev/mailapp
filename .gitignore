@@ -1,2 +1,4 @@
 .DS_Store
 /target
+# Real emails for the rendering corpus (PLAN open question 3): this repository is public.
+/corpus/
