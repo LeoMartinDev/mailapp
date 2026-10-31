@@ -8,4 +8,7 @@ deny = [
     { crate = "mailapp-sqlite", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
     { crate = "mailapp-ui", wrappers = ["mailapp"], reason = "only the mailapp executable opens the UI" },
     { crate = "mailapp-mail-render", wrappers = ["mailapp-ui"], reason = "mail-render is a piece of the UI" },
+    { crate = "blitz-dom", wrappers = ["blitz-html", "blitz-paint", "mailapp-mail-render"], reason = "Blitz is used only behind mail-render, so the engine can be swapped there" },
+    { crate = "blitz-html", wrappers = ["mailapp-mail-render"], reason = "Blitz is used only behind mail-render, so the engine can be swapped there" },
+    { crate = "blitz-paint", wrappers = ["mailapp-mail-render"], reason = "Blitz is used only behind mail-render, so the engine can be swapped there" },
 ]
