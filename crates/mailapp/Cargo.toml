@@ -8,5 +8,6 @@ publish.workspace = true
 [dependencies]
 mailapp-core.workspace = true
 mailapp-imap.workspace = true
+mailapp-secrets.workspace = true
 mailapp-sqlite.workspace = true
 mailapp-ui.workspace = true

@@ -3,6 +3,7 @@ resolver = "3"
 members = [
     "crates/core",
     "crates/infrastructure/imap",
+    "crates/infrastructure/secrets",
     "crates/infrastructure/sqlite",
     "crates/mail-render",
     "crates/mailapp",
@@ -19,5 +20,6 @@ publish = false
 mailapp-core = { path = "crates/core" }
 mailapp-imap = { path = "crates/infrastructure/imap" }
 mailapp-mail-render = { path = "crates/mail-render" }
+mailapp-secrets = { path = "crates/infrastructure/secrets" }
 mailapp-sqlite = { path = "crates/infrastructure/sqlite" }
 mailapp-ui = { path = "crates/ui" }

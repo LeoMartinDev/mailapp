@@ -5,7 +5,11 @@
 [bans]
 deny = [
     { crate = "mailapp-imap", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
+    { crate = "mailapp-secrets", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
     { crate = "mailapp-sqlite", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
     { crate = "mailapp-ui", wrappers = ["mailapp"], reason = "only the mailapp executable opens the UI" },
     { crate = "mailapp-mail-render", wrappers = ["mailapp-ui"], reason = "mail-render is a piece of the UI" },
+    { crate = "apple-native-keyring-store", wrappers = ["mailapp-secrets"], reason = "only the secrets adapter talks to the OS secret store" },
+    { crate = "keyring-core", wrappers = ["apple-native-keyring-store", "mailapp-secrets", "windows-native-keyring-store"], reason = "only the secrets adapter talks to the OS secret store" },
+    { crate = "windows-native-keyring-store", wrappers = ["mailapp-secrets"], reason = "only the secrets adapter talks to the OS secret store" },
 ]
