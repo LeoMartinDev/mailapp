@@ -82,6 +82,14 @@ impl HeaderStore for SqliteStore {
             .query_row("SELECT count(*) FROM inbox_headers", [], |row| row.get(0))?)
     }
 
+    fn highest_uid(&self) -> Result<u32> {
+        Ok(self.conn.query_row(
+            "SELECT coalesce(max(uid), 0) FROM inbox_headers",
+            [],
+            |row| row.get(0),
+        )?)
+    }
+
     fn headers_page(&self, offset: u64, limit: u64) -> Result<Vec<MessageHeader>> {
         let mut select = self.conn.prepare_cached(
             "SELECT uid, sender, subject, date, unread FROM inbox_headers
@@ -136,6 +144,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let mut store =
             SqliteStore::open(&dir.path().join("db"), &MemorySecrets::default()).unwrap();
+        assert_eq!(store.highest_uid().unwrap(), 0);
 
         store
             .upsert_headers(&[
@@ -151,6 +160,7 @@ mod tests {
         store.upsert_headers(std::slice::from_ref(&read)).unwrap();
 
         assert_eq!(store.count_headers().unwrap(), 3);
+        assert_eq!(store.highest_uid().unwrap(), 3);
         assert_eq!(
             store.headers_page(0, 10).unwrap(),
             [header(2, 300, "new"), read.clone(), header(1, 100, "old")]
