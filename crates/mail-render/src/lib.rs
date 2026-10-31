@@ -3,4 +3,4 @@
 mod body;
 mod worker;
 
-pub use body::{FirstPaint, MailBody};
+pub use body::{FirstPaint, MailBody, Rendered};

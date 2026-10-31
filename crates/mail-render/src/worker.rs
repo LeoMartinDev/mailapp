@@ -3,6 +3,7 @@
 
 use std::sync::{Arc, mpsc};
 use std::thread;
+use std::time::{Duration, Instant};
 
 use anyrender::render_to_buffer;
 use anyrender_vello_cpu::VelloCpuImageRenderer;
@@ -34,13 +35,21 @@ pub(crate) enum Command {
     },
 }
 
+/// Each event carries the time its work took on this thread.
 pub(crate) enum Event {
+    /// The HTML is parsed, once, before any command is handled.
+    Parsed { took: Duration },
     /// The document's height in CSS pixels.
-    Layout { generation: u64, height: f32 },
+    Layout {
+        generation: u64,
+        height: f32,
+        took: Duration,
+    },
     Band {
         generation: u64,
         band: usize,
         image: Arc<RenderImage>,
+        took: Duration,
     },
 }
 
@@ -56,7 +65,14 @@ pub(crate) fn spawn(html: String) -> (mpsc::Sender<Command>, UnboundedReceiver<E
 }
 
 fn run(html: &str, commands: mpsc::Receiver<Command>, events: UnboundedSender<Event>) {
+    let started = Instant::now();
     let mut document = document(html);
+    let parsed = Event::Parsed {
+        took: started.elapsed(),
+    };
+    if events.unbounded_send(parsed).is_err() {
+        return;
+    }
     while let Ok(command) = commands.recv() {
         let mut batch: Vec<_> = [command].into_iter().chain(commands.try_iter()).collect();
         // Commands sent before the latest layout are stale, e.g. while the window is resized.
@@ -65,6 +81,7 @@ fn run(html: &str, commands: mpsc::Receiver<Command>, events: UnboundedSender<Ev
             .rposition(|command| matches!(command, Command::Layout { .. }))
             .unwrap_or(0);
         for command in batch.drain(latest..) {
+            let started = Instant::now();
             let event = match command {
                 Command::Layout {
                     generation,
@@ -74,13 +91,18 @@ fn run(html: &str, commands: mpsc::Receiver<Command>, events: UnboundedSender<Ev
                 } => {
                     document.set_viewport(Viewport::new(width, height, scale, ColorScheme::Light));
                     document.resolve(0.);
-                    let height = document.root_element().scroll_height();
-                    Event::Layout { generation, height }
+                    Event::Layout {
+                        generation,
+                        height: document.root_element().scroll_height(),
+                        took: started.elapsed(),
+                    }
                 }
+                // Fields are evaluated in order, so `took` includes the painting.
                 Command::Paint { generation, band } => Event::Band {
                     generation,
                     band,
                     image: paint_band(&mut document, band),
+                    took: started.elapsed(),
                 },
             };
             if events.unbounded_send(event).is_err() {
@@ -185,6 +207,16 @@ mod tests {
         }
     }
 
+    /// Spawns a worker, which reports the parsing first.
+    fn start(html: &str) -> Worker {
+        let mut worker = spawn(html.into());
+        assert!(matches!(
+            block_on(worker.1.next()),
+            Some(Event::Parsed { .. })
+        ));
+        worker
+    }
+
     fn has_ink(image: &RenderImage) -> bool {
         let pixels = image.as_bytes(0).unwrap();
         pixels.chunks(4).any(|pixel| pixel != [255; 4])
@@ -192,7 +224,7 @@ mod tests {
 
     #[test]
     fn renders_the_sample() {
-        let mut worker = spawn(SAMPLE.into());
+        let mut worker = start(SAMPLE);
         let height = layout(&mut worker, 1, 800., 1.);
         assert!((500. ..5000.).contains(&height), "height: {height}");
         let band = first_band(&mut worker, 1);
@@ -222,7 +254,7 @@ mod tests {
         // Nor does it wait for them before painting.
         let html = r#"<link rel="stylesheet" href="https://example.com/style.css">
             <img src="https://example.com/pixel.png" width="1" height="1"><p>Hello</p>"#;
-        let mut worker = spawn(html.into());
+        let mut worker = start(html);
         layout(&mut worker, 1, 400., 1.);
         assert!(has_ink(&first_band(&mut worker, 1)));
     }
@@ -232,7 +264,7 @@ mod tests {
         // A 1×1 red PNG, stretched over the top-left corner.
         let html = r#"<body style="margin: 0"><img width="40" height="40"
             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP4z8AAAAMBAQD3A0FDAAAAAElFTkSuQmCC">"#;
-        let mut worker = spawn(html.into());
+        let mut worker = start(html);
         layout(&mut worker, 1, 400., 1.);
         let band = first_band(&mut worker, 1);
         let at = (20 * 400 + 20) * 4;
