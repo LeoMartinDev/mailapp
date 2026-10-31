@@ -1,0 +1,30 @@
+From: Alex Example <alex@example.org>
+To: Sam Example <sam@example.com>
+Subject: Re: Thursday's build
+Date: Fri, 30 Oct 2026 17:42:10 +0100
+Message-ID: <reply-1@example.org>
+In-Reply-To: <build-1@example.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
+Hi Sam,
+
+Thanks, that fixed it. The build now takes 4 minutes instead of 11 on my =
+machine, and the tests pass.
+
+A few notes, in no particular order:
+
+  1. The flag is --release, not --relase.
+  2. Paths with spaces need quotes: "C:\Program Files\Tool"
+  3. In the config, <port> & <host> are placeholders.
+
+Caf=E9 on Monday?
+
+Alex
+
+On Thu, 29 Oct 2026, Sam Example wrote:
+> Could you try the build again with the new cache settings? It should
+> skip the parts that did not change.
+>
+> -- Sam

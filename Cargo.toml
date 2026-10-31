@@ -18,6 +18,7 @@ publish = false
 [workspace.dependencies]
 anyrender = "0.14.0"
 anyrender_vello_cpu = "0.18.0"
+base64 = "0.23.1"
 # Blitz's last non-beta release (0.2.4) is a year old and needs anyrender 0.6; the 0.3 betas are
 # where Blitz is developed and released. CSS floats are off by default in Blitz; mail uses them.
 blitz-dom = { version = "0.3.0-beta.4", features = ["floats"] }
@@ -33,6 +34,7 @@ gpui = { git = "https://github.com/zed-industries/zed", rev = "c4273271092b0287f
 # Metal shaders at launch, so building needs no Metal Toolchain (a separate download since Xcode 26).
 gpui_platform = { git = "https://github.com/zed-industries/zed", rev = "c4273271092b0287f7d181f616bd5171e0a2f70c", features = ["font-kit", "runtime_shaders"] }
 image = { version = "0.25.10", default-features = false }
+mail-parser = "1.0.0"
 mailapp-core = { path = "crates/core" }
 mailapp-imap = { path = "crates/infrastructure/imap" }
 mailapp-mail-render = { path = "crates/mail-render" }
