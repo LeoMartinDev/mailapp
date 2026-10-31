@@ -3,9 +3,9 @@
 use std::fmt::Debug;
 use std::sync::Arc;
 
+use async_imap::Client;
 use async_imap::imap_proto::{Address, Envelope};
 use async_imap::types::{Fetch, Flag};
-use async_imap::{Client, Session};
 use futures_util::StreamExt;
 use mail_parser::HeaderForm;
 use mailapp_core::{MessageHeader, Result};
@@ -17,6 +17,9 @@ use tokio_rustls::client::TlsStream;
 use tokio_rustls::rustls::ClientConfig;
 use tokio_rustls::rustls::crypto::ring;
 use tokio_rustls::rustls::pki_types::ServerName;
+
+// Callers name the session this crate returns without depending on async-imap themselves.
+pub use async_imap::Session;
 
 /// Headers handed over at a time: one store transaction each, and the list fills as they arrive.
 const BATCH: usize = 500;

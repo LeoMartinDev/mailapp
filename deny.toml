@@ -2,15 +2,11 @@
 # Each entry lists the only crates allowed to depend on that crate directly.
 # A PR that adds an infrastructure or UI library (rusqlite, async-imap, gpui…) adds its rule here.
 
-# The rules guard shipped code; tests may wire adapters together (IMAP into SQLite).
-[graph]
-exclude-dev = true
-
 [bans]
 deny = [
-    { crate = "mailapp-imap", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
+    { crate = "mailapp-imap", wrappers = ["mailapp", "mailapp-integration-tests"], reason = "infrastructure: only the mailapp executable wires it to the core, and the integration tests exercise it" },
     { crate = "mailapp-secrets", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
-    { crate = "mailapp-sqlite", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
+    { crate = "mailapp-sqlite", wrappers = ["mailapp", "mailapp-integration-tests"], reason = "infrastructure: only the mailapp executable wires it to the core, and the integration tests exercise it" },
     { crate = "mailapp-ui", wrappers = ["mailapp"], reason = "only the mailapp executable opens the UI" },
     { crate = "mailapp-mail-render", wrappers = ["mailapp-ui"], reason = "mail-render is a piece of the UI" },
     { crate = "apple-native-keyring-store", wrappers = ["mailapp-secrets"], reason = "only the secrets adapter talks to the OS secret store" },

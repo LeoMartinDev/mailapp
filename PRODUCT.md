@@ -360,6 +360,7 @@ crates/
   mcp/                   MCP HTTP server
   mail-render/           sanitize + preprocess + Blitz → GPUI, used by ui
   mailapp/               the executable: assembles everything
+  integration-tests/     tests that wire adapters together against real servers (Docker)
 ```
 
 Package names are prefixed `mailapp-` (`mailapp-core`, `mailapp-imap`…); the executable is `mailapp`. Zed's `ui` crate is imported as `zed_ui` (`zed_ui = { package = "ui", … }`), so `ui` in our code never means two things.

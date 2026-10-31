@@ -1,14 +1,16 @@
-//! Syncs a real IMAP Inbox into the encrypted store. Needs GreenMail on localhost:3143:
+//! Tests that wire adapters together against real servers live in this crate, so the adapters
+//! never depend on each other, not even in tests.
+//!
+//! This one syncs a real IMAP Inbox into the encrypted store. Needs GreenMail on localhost:3143:
 //! `docker run --rm -p 3143:3143 greenmail/standalone:2.1.15`, then
-//! `cargo test -p mailapp-imap -- --ignored`.
+//! `cargo test -p mailapp-integration-tests -- --ignored`.
 
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use async_imap::Session;
 use mailapp_core::{HeaderStore, Result, SecretStore};
-use mailapp_imap::{fetch_inbox_headers, login};
+use mailapp_imap::{Session, fetch_inbox_headers, login};
 use mailapp_sqlite::SqliteStore;
 use tokio::net::TcpStream;
 

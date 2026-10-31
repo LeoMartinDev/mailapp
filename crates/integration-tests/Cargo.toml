@@ -1,0 +1,13 @@
+[package]
+name = "mailapp-integration-tests"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dev-dependencies]
+mailapp-core.workspace = true
+mailapp-imap.workspace = true
+mailapp-sqlite.workspace = true
+tempfile = "3.27.0"
+tokio = { version = "1.54.1", features = ["macros", "net", "rt"] }

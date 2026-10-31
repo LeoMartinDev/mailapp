@@ -513,11 +513,20 @@ dependencies = [
  "futures-util",
  "mail-parser",
  "mailapp-core",
- "mailapp-sqlite",
  "rustls-platform-verifier",
- "tempfile",
  "tokio",
  "tokio-rustls",
+]
+
+[[package]]
+name = "mailapp-integration-tests"
+version = "0.1.0"
+dependencies = [
+ "mailapp-core",
+ "mailapp-imap",
+ "mailapp-sqlite",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
