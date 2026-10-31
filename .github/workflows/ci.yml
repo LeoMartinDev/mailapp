@@ -38,4 +38,4 @@ jobs:
       - run: rustup toolchain install
       - run: rustup target add aarch64-apple-ios
       - uses: Swatinem/rust-cache@v2
-      - run: cargo check --target aarch64-apple-ios -p mailapp-domain -p mailapp-application -p mailapp-sqlite -p mailapp-imap
+      - run: cargo check --target aarch64-apple-ios -p mailapp-core -p mailapp-imap -p mailapp-sqlite

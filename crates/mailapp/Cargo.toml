@@ -6,9 +6,7 @@ license.workspace = true
 publish.workspace = true
 
 [dependencies]
-mailapp-application.workspace = true
-mailapp-domain.workspace = true
+mailapp-core.workspace = true
 mailapp-imap.workspace = true
-mailapp-mail-render.workspace = true
 mailapp-sqlite.workspace = true
 mailapp-ui.workspace = true

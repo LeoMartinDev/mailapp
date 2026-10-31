@@ -42,7 +42,7 @@ Same goal as §13, plus two checks: a text-input spike (search, recipients, sett
 
 | # | Step | Size |
 |---|---|---|
-| 0.1 | **Workspace.** Cargo workspace with the §8.8 crates M0 needs (`domain`, `application`, `sqlite`, `imap`, `mail-render`, `ui`, `app`); the others are created when first needed. `gpui` + `ui` + `theme` pinned to one Zed commit, Inter bundled. A window opens with a `ui` context menu, popover and tooltip, which shows that `ui` works outside Zed. CI: build, clippy and tests on macOS and Windows, plus `cargo check --target aarch64-apple-ios` on the core crates. | S |
+| 0.1 | **Workspace.** Cargo workspace with the §8.8 crates M0 needs (`core`, `sqlite`, `imap`, `mail-render`, `ui`, `mailapp`); the others are created when first needed. `gpui` + `ui` + `theme` pinned to one Zed commit, Inter bundled. A window opens with a `ui` context menu, popover and tooltip, which shows that `ui` works outside Zed. CI: build, clippy and tests on macOS and Windows, plus `cargo check --target aarch64-apple-ios` on `core` and the infrastructure crates. | S |
 | 0.2 | **Blitz, with a decision gate.** Collect about 30 real emails (newsletters, transactional, Outlook-generated, plain text) and anonymize them: this becomes the snapshot corpus. Render each one in GPUI through Blitz on its own thread. Measure fidelity next to a browser, time to first paint, scrolling and memory. **Gate**: if fidelity is not acceptable, evaluate the webview path before building M1 (`MailBody` keeps the swap local). | M |
 | 0.3 | **Text input.** Single-line and multi-line inputs on GPUI's input handler, informed by gpui-component: IME (accents, dead keys) on macOS and Windows, selection, clipboard, undo. | M |
 | 0.4 | **IMAP → SQLCipher → list.** One account, Inbox headers synced on a tokio runtime, stored in SQLCipher (key in the OS secret store), shown in a virtualized list fed through a channel. | M |
@@ -127,7 +127,7 @@ Read in mailapp; still triage and send elsewhere. Nothing is written to the serv
 
 ## Rules from day one
 
-- One crate per layer and per adapter; dependencies point inward, and the compiler enforces it.
+- `core`, `ui` and one crate per adapter; dependencies point inward to `core`, and the compiler enforces it.
 - Every port has an in-memory fake; adapters are tested against Stalwart and GreenMail in Docker; agent tests replay recorded responses.
 - Nothing is ever written in plaintext: SQLCipher and the secret store from the first byte, so there is never a plaintext-to-encrypted migration.
 - Migrations from the first table. Before daily use, a schema change can wipe and resync; after it, local-only state (journal, snoozes, settings) must survive.
