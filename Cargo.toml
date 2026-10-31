@@ -5,6 +5,7 @@ members = [
     "crates/infrastructure/imap",
     "crates/infrastructure/secrets",
     "crates/infrastructure/sqlite",
+    "crates/integration-tests",
     "crates/mail-render",
     "crates/mailapp",
     "crates/ui",

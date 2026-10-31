@@ -22,6 +22,8 @@ pub trait HeaderStore {
     /// Inserts the headers, replacing those with the same UID.
     fn upsert_headers(&mut self, headers: &[MessageHeader]) -> Result<()>;
     fn count_headers(&self) -> Result<u64>;
+    /// The highest UID stored, 0 when there is none (IMAP UIDs start at 1). Sync fetches above it.
+    fn highest_uid(&self) -> Result<u32>;
     /// Headers sorted newest first, skipping `offset` of them.
     fn headers_page(&self, offset: u64, limit: u64) -> Result<Vec<MessageHeader>>;
 }
