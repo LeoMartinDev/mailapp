@@ -11,12 +11,14 @@ use crate::design::text_input::TextInput;
 
 pub struct Demo {
     input: Entity<TextInput>,
+    notes: Entity<TextInput>,
 }
 
 impl Demo {
     pub fn new(cx: &mut Context<Self>) -> Self {
         Self {
             input: cx.new(|cx| TextInput::new("Type here…", cx)),
+            notes: cx.new(|cx| TextInput::new("Write a few lines…", cx).multi_line()),
         }
     }
 }
@@ -51,6 +53,7 @@ impl Render for Demo {
                     .tooltip(Tooltip::text("A tooltip from Zed's ui")),
             )
             .child(div().w_80().child(self.input.clone()))
+            .child(div().w_80().h_32().child(self.notes.clone()))
     }
 }
 
