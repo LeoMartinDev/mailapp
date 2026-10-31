@@ -30,6 +30,15 @@ jobs:
       - run: cargo clippy --workspace --all-targets -- -D warnings
       - run: cargo test --workspace
 
+  # Who may depend on what (deny.toml).
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command-arguments: bans
+
   # Core crates must stay mobile-ready (PRODUCT.md §8.7).
   ios:
     runs-on: macos-latest

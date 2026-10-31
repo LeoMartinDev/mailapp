@@ -1,0 +1,11 @@
+# Architecture rules (PRODUCT.md §8.1), checked in CI by `cargo deny check bans`.
+# Each entry lists the only crates allowed to depend on that crate directly.
+# A PR that adds an infrastructure or UI library (rusqlite, async-imap, gpui…) adds its rule here.
+
+[bans]
+deny = [
+    { crate = "mailapp-imap", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
+    { crate = "mailapp-sqlite", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },
+    { crate = "mailapp-ui", wrappers = ["mailapp"], reason = "only the mailapp executable opens the UI" },
+    { crate = "mailapp-mail-render", wrappers = ["mailapp-ui"], reason = "mail-render is a piece of the UI" },
+]
