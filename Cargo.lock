@@ -3228,6 +3228,7 @@ dependencies = [
  "blitz-html",
  "blitz-paint",
  "blitz-traits",
+ "data-url",
  "futures",
  "gpui",
  "gpui_platform",
