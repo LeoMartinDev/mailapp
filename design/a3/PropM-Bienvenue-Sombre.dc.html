@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>A3 Matière — Bienvenue, sombre</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&amp;display=swap">
+<style>
+body{margin:0}
+.app{--text:#EDEDEF;--text2:#A1A1AA;--acc:#2F6FEB;--accText:#82A9F3;--ring:#5B8FF5;--line:rgba(255,255,255,.08);color-scheme:dark}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;cursor:default}
+.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* dark relief: light only on the top rim, thickness drawn with darker edges below */
+.slab{background:linear-gradient(180deg,rgba(22,22,26,.95),rgba(15,15,18,.95));-webkit-backdrop-filter:blur(30px) saturate(1.3);backdrop-filter:blur(30px) saturate(1.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -2px 0 rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.55),0 2px 0 rgba(0,0,0,.35),0 18px 40px -14px rgba(0,0,0,.65)}
+.chip{background:linear-gradient(180deg,#212226,#18191C);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(0,0,0,.55),0 1px 0 rgba(0,0,0,.45),0 4px 10px -5px rgba(0,0,0,.55)}
+.well{background:rgba(0,0,0,.24);box-shadow:inset 0 1px 2px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.04)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 11px;border-radius:9px;font-size:12.5px;font-weight:500;flex:none;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.btn:active{transform:translateY(1px)}
+.pri{background:linear-gradient(180deg,#3170E6,#265DCB);color:#FFFFFF;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 1px #1A3F8A,0 2px 0 #142F69,0 8px 18px -8px rgba(47,111,235,.6)}
+.pri:hover{transform:translateY(-1px)}
+.pri:active{transform:translateY(1px);box-shadow:inset 0 1px 2px rgba(0,0,0,.3),0 0 0 1px #1A3F8A}
+/* app mark: the accent tile, same relief family as the primary button */
+.mark{position:relative;display:flex;align-items:center;justify-content:center;flex:none;color:#FFFFFF;background:linear-gradient(180deg,#3B7BF0,#265DCB);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -2px 0 rgba(0,0,0,.15),0 0 0 1px #1A3F8A,0 3px 0 #142F69,0 18px 30px -12px rgba(47,111,235,.55)}
+.pr{display:flex;align-items:center;gap:14px;padding:10px 12px;border-radius:13px;animation:item .45s cubic-bezier(.2,.8,.2,1) both}
+.pt{display:flex;flex-direction:column;gap:2px;min-width:0}
+kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;margin:0 2px;border-radius:6px;font:inherit;font-size:11.5px;font-weight:600;vertical-align:1px;background:linear-gradient(180deg,#2A2B30,#1C1D21);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(0,0,0,.55),0 1px 0 rgba(0,0,0,.45)}
+.seg{height:26px;padding:0 12px;border-radius:7px;font-size:12px;color:var(--text2);transition:background .18s ease,box-shadow .18s ease,color .18s ease}
+.seg.chip{color:var(--text);font-weight:550}
+.seg:not(.chip):hover{color:var(--text)}
+@keyframes rise{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes item{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</helmet>
+<div class="app" style="position: relative; height: 100vh; min-height: 760px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding: 32px 16px; background: #050506; color: var(--text); font-family: Inter, 'Segoe UI Variable Text', system-ui, -apple-system, sans-serif; font-optical-sizing: auto; font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased">
+
+<span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(155deg, #0C1120 0%, #070709 50%, #0F0C18 100%)"></span>
+<svg aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.07; mix-blend-mode: overlay; pointer-events: none"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="100%" height="100%" filter="url(#grain)"></rect></svg>
+
+<div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 560px">
+
+<main class="slab" style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 42px 44px 30px; border-radius: 22px; text-align: center; animation: rise .55s cubic-bezier(.2,.8,.2,1) both">
+<span class="mark" aria-hidden="true" style="width: 64px; height: 64px; border-radius: 18px; animation: pop .45s .12s cubic-bezier(.2,.8,.2,1) both">
+<span style="position: absolute; top: 1px; left: 1px; right: 1px; height: 50%; border-radius: 17px 17px 8px 8px; background: linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,255,255,0))"></span>
+<svg class="i" viewBox="0 0 24 24" style="position: relative; width: 30px; height: 30px; stroke-width: 1.7"><path d="M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM3 7l9 6 9-6"></path></svg>
+</span>
+<h1 style="margin: 24px 0 0; font-size: 30px; font-weight: 650; line-height: 1.12; letter-spacing: -0.024em; animation: item .45s .18s cubic-bezier(.2,.8,.2,1) both">Bienvenue dans mailapp</h1>
+<p style="margin: 8px 0 0; font-size: 15px; color: var(--text2); animation: item .45s .24s cubic-bezier(.2,.8,.2,1) both">Un client mail natif et rapide, qui reste le vôtre.</p>
+
+<ul aria-label="Nos engagements" style="align-self: stretch; display: flex; flex-direction: column; gap: 2px; margin: 28px -12px 0; padding: 0; list-style: none; text-align: left">
+<li class="pr" style="animation-delay: .3s">
+<span class="well" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 11px; flex: none; color: var(--accText)"><svg class="i" viewBox="0 0 24 24" style="width: 17px; height: 17px"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zM12 15v2"></path></svg></span>
+<span class="pt"><span style="font-size: 13.5px; font-weight: 600">Vos mails restent sur cet ordinateur, chiffrés</span><span style="font-size: 12.5px; color: var(--text2)">Directement de votre fournisseur à votre disque, sans intermédiaire.</span></span>
+</li>
+<li class="pr" style="animation-delay: .38s">
+<span class="well" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 11px; flex: none; color: var(--accText)"><svg class="i" viewBox="0 0 24 24" style="width: 17px; height: 17px"><path d="M9 6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3z"></path></svg></span>
+<span class="pt"><span style="font-size: 13.5px; font-weight: 600">Tout se fait au clavier, <kbd>⌘K</kbd> pour commencer</span><span style="font-size: 12.5px; color: var(--text2)">Chaque action a son raccourci, la palette trouve le reste.</span></span>
+</li>
+<li class="pr" style="animation-delay: .46s">
+<span class="well" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 11px; flex: none; color: var(--accText)"><svg class="i" viewBox="0 0 24 24" style="width: 17px; height: 17px"><path d="M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z"></path></svg></span>
+<span class="pt"><span style="font-size: 13.5px; font-weight: 600">Les agents préparent, vous décidez</span><span style="font-size: 12.5px; color: var(--text2)">Rien n’est envoyé ni supprimé sans votre accord.</span></span>
+</li>
+</ul>
+
+<div style="align-self: stretch; margin-top: 28px; animation: item .45s .54s cubic-bezier(.2,.8,.2,1) both">
+<button class="btn pri" style="width: 100%; height: 42px; border-radius: 11px; font-size: 14px">Ajouter un compte</button>
+</div>
+
+<div role="group" aria-label="Langue de l’interface" class="well" style="display: flex; margin-top: 18px; padding: 3px; border-radius: 10px; animation: item .45s .6s cubic-bezier(.2,.8,.2,1) both">
+<button class="{{frCls}}" aria-pressed="{{frOn}}" onClick="{{pickFr}}">Français</button>
+<button class="{{enCls}}" aria-pressed="{{enOn}}" onClick="{{pickEn}}" lang="en">English</button>
+</div>
+</main>
+
+<p style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12.5px; color: var(--text2); animation: fade .5s .75s ease both"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6zM9 12l2 2 4-4"></path></svg>Aucun compte mailapp, aucun serveur, aucune télémétrie.</p>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lang: "fr" };
+  }
+  renderVals() {
+    const fr = this.state.lang === "fr";
+    return {
+      frCls: fr ? "seg chip" : "seg",
+      enCls: fr ? "seg" : "seg chip",
+      frOn: fr ? "true" : "false",
+      enOn: fr ? "false" : "true",
+      pickFr: () => this.setState({ lang: "fr" }),
+      pickEn: () => this.setState({ lang: "en" })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>A3 Matière — Palette, sombre</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&amp;display=swap">
+<style>
+body{margin:0}
+.app{--text:#EDEDEF;--text2:#A1A1AA;--acc:#2F6FEB;--accText:#82A9F3;--ring:#5B8FF5;--line:rgba(255,255,255,.08);color-scheme:dark}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;cursor:default}
+input{font:inherit;color:inherit;margin:0}
+input::placeholder{color:#8E8E97}
+.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ell{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* dark relief: light only on the top rim, thickness drawn with darker edges below */
+.slab{background:linear-gradient(180deg,rgba(22,22,26,.95),rgba(15,15,18,.95));-webkit-backdrop-filter:blur(30px) saturate(1.3);backdrop-filter:blur(30px) saturate(1.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -2px 0 rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.55),0 2px 0 rgba(0,0,0,.35),0 18px 40px -14px rgba(0,0,0,.65)}
+.lift{background:linear-gradient(180deg,#232428,#1A1B1E);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(0,0,0,.6),0 2px 0 rgba(0,0,0,.45),0 10px 22px -12px rgba(0,0,0,.75)}
+.chip{background:linear-gradient(180deg,#212226,#18191C);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(0,0,0,.55),0 1px 0 rgba(0,0,0,.45),0 4px 10px -5px rgba(0,0,0,.55)}
+.well{background:rgba(0,0,0,.24);box-shadow:inset 0 1px 2px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.04)}
+.sheet{position:relative;display:flex;flex-direction:column;gap:8px;box-sizing:border-box;border-radius:13px;text-align:left;background:linear-gradient(180deg,#1E1F23,#17181B);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(0,0,0,.5),0 2px 0 rgba(0,0,0,.32),0 8px 16px -12px rgba(0,0,0,.65)}
+/* skeleton of the main window behind the palette */
+.sk{display:block;height:9px;border-radius:5px;background:rgba(255,255,255,.08);flex:none}
+/* palette rows: the highlighted one takes the max-relief selected style */
+.pr{display:flex;align-items:center;gap:10px;width:100%;min-height:38px;padding:6px 12px 6px 8px;box-sizing:border-box;border-radius:13px;text-align:left;transition:background .16s ease,box-shadow .16s ease}
+.pr:not(.on):hover{background:rgba(255,255,255,.045)}
+.pr.on{background:linear-gradient(180deg,#232428,#1A1B1E);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(0,0,0,.6),0 2px 0 rgba(0,0,0,.45),0 10px 22px -12px rgba(0,0,0,.75)}
+.pr:focus-visible{outline-offset:-2px}
+.pi{display:flex;align-items:center;justify-content:center;width:26px;height:26px;flex:none;color:var(--text2);transition:color .16s}
+.pr.on .pi,.pi.ai{color:var(--accText)}
+.k{flex:none;font-size:12px;color:var(--text2);letter-spacing:.03em;font-variant-numeric:tabular-nums}
+.gl{padding:10px 12px 4px;font-size:12px;font-weight:600;color:var(--text2)}
+.kb{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;box-sizing:border-box;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:11px;font-weight:500;color:var(--text2);flex:none}
+.op{height:22px;padding:0 7px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);font-size:11.5px;color:var(--text2);transition:background .15s,color .15s}
+.op:hover{background:rgba(255,255,255,.06);color:var(--text)}
+/* the hit takes the full text color: a tinted fill under --text2 would drop below 4.5:1 on the selected row */
+mark{background:rgba(91,143,245,.26);color:var(--text);border-radius:3px}
+@keyframes drop{from{opacity:0;transform:translateY(-10px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</helmet>
+<div class="app" style="position: relative; height: 100vh; min-height: 760px; overflow: hidden; background: #050506; color: var(--text); font-family: Inter, 'Segoe UI Variable Text', system-ui, -apple-system, sans-serif; font-optical-sizing: auto; font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased">
+
+<span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(155deg, #0C1120 0%, #070709 50%, #0F0C18 100%)"></span>
+<svg aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.07; mix-blend-mode: overlay; pointer-events: none"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="100%" height="100%" filter="url(#grain)"></rect></svg>
+
+<div aria-hidden="true" style="position: relative; display: flex; gap: 10px; height: 100%; box-sizing: border-box; padding: 10px; filter: blur(1.6px)">
+<div style="flex: 0 0 216px; display: flex; flex-direction: column; gap: 16px; padding: 6px 4px 4px">
+<div style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 6px"><span style="width: 26px; height: 26px; border-radius: 8px; background: #2F6FEB; flex: none"></span><span class="sk" style="width: 110px; height: 12px; background: rgba(255,255,255,.13)"></span></div>
+<span style="display: block; height: 34px; border-radius: 11px; background: rgba(255,255,255,.05); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07)"></span>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{skNav}}" as="n" hint-placeholder-count="6">
+<span style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 10px; background: {{n.bg}}"><span class="sk" style="width: 16px; height: 16px; border-radius: 5px"></span><span class="sk" style="width: {{n.w}}px"></span></span>
+</sc-for>
+</div>
+</div>
+<div class="slab" style="flex: 0 1 440px; min-width: 0; padding: 22px 14px 0 10px; box-sizing: border-box; overflow: hidden; border-radius: 18px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 4px 16px 12px"><span class="sk" style="width: 84px; height: 13px; background: rgba(255,255,255,.14)"></span><span class="sk" style="width: 56px"></span><span style="flex: 1 1 auto"></span><span class="well" style="width: 104px; height: 30px; border-radius: 10px"></span></div>
+<div style="display: flex; flex-direction: column; gap: 3px">
+<sc-for list="{{skRows}}" as="r" hint-placeholder-count="7">
+<span class="{{r.cls}}" style="display: flex; gap: 12px; padding: 13px 12px 14px 10px; border-radius: 13px">
+<span style="width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.2); flex: none"></span>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px"><span style="display: flex; justify-content: space-between"><span class="sk" style="width: {{r.a}}%; background: rgba(255,255,255,.13)"></span><span class="sk" style="width: 34px"></span></span><span class="sk" style="width: {{r.b}}%"></span><span class="sk" style="width: {{r.c}}%; background: rgba(255,255,255,.05)"></span></span>
+</span>
+</sc-for>
+</div>
+</div>
+<div class="slab" style="flex: 1 1 0; min-width: 0; padding: 14px 22px; box-sizing: border-box; overflow: hidden; border-radius: 18px">
+<span class="chip" style="display: block; width: 236px; height: 32px; border-radius: 10px"></span>
+<div style="max-width: 588px; margin: 28px auto 0; display: flex; flex-direction: column; gap: 12px">
+<span class="sk" style="width: 74%; height: 22px; border-radius: 7px; background: rgba(255,255,255,.13)"></span>
+<span class="sk" style="width: 46%; height: 22px; border-radius: 7px; background: rgba(255,255,255,.13)"></span>
+<span class="sk" style="width: 120px; margin: 2px 0 8px"></span>
+<span class="well" style="display: block; height: 118px; border-radius: 14px"></span>
+<div style="display: flex; flex-direction: column; padding-top: 8px">
+<span class="sheet" style="display: block; height: 44px; margin: 0 24px -12px"></span>
+<span class="sheet" style="display: block; height: 44px; margin: 0 12px -12px"></span>
+<span class="sheet" style="display: flex; flex-direction: column; gap: 12px; padding: 20px">
+<span class="sk" style="width: 38%; height: 11px; background: rgba(255,255,255,.13)"></span>
+<span class="sk" style="width: 92%"></span>
+<span class="sk" style="width: 86%"></span>
+<span class="sk" style="width: 64%"></span>
+<span class="sk" style="width: 78%"></span>
+</span>
+</div>
+</div>
+</div>
+</div>
+
+<div aria-hidden="true" style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 18%, rgba(0,0,0,.45), rgba(0,0,0,.55)); animation: fade .3s ease both"></div>
+
+<div style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: flex-start; padding: 92px 16px 24px; box-sizing: border-box">
+<div role="dialog" aria-modal="true" aria-label="Palette de commandes" class="slab" style="width: 680px; max-width: 100%; overflow: hidden; border-radius: 18px; animation: drop .34s cubic-bezier(.2,.8,.2,1) both">
+
+<div style="display: flex; align-items: center; gap: 12px; height: 58px; padding: 0 16px 0 20px">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; color: var(--text2)"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<label class="sr" for="pq">Rechercher une action ou une conversation</label>
+<input id="pq" type="text" role="combobox" aria-expanded="true" aria-controls="pl-res" aria-autocomplete="list" aria-activedescendant="{{activeId}}" autocomplete="off" spellcheck="false" value="{{query}}" onChange="{{onQuery}}" onKeyDown="{{onKey}}" placeholder="Rechercher une action, une conversation…" style="flex: 1 1 auto; min-width: 0; border: 0; outline: 0; padding: 0; background: transparent; font-size: 16px; caret-color: var(--ring)">
+<span class="kb">esc</span>
+</div>
+<div aria-hidden="true" style="height: 1px; background: var(--line)"></div>
+
+<div id="pl-res" role="listbox" aria-label="Résultats" style="max-height: min(560px, calc(100vh - 240px)); overflow: auto; padding: 4px 8px 8px">
+
+<sc-if value="{{hasActions}}" hint-placeholder-val="{{true}}">
+<div role="group" aria-labelledby="g-act">
+<div id="g-act" class="gl">Actions</div>
+<sc-for list="{{actions}}" as="x" hint-placeholder-count="4">
+<button class="{{x.cls}}" role="option" id="{{x.id}}" aria-selected="{{x.sel}}" onClick="{{x.pick}}" onMouseEnter="{{x.pick}}">
+<span class="{{x.piCls}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{x.icon}}"></path></svg></span>
+<span class="ell" style="flex: 1 1 auto; font-weight: 500">{{x.l.pre}}<mark>{{x.l.hit}}</mark>{{x.l.post}}</span>
+<span class="k">{{x.key}}</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{hasConvs}}" hint-placeholder-val="{{true}}">
+<div role="group" aria-labelledby="g-conv">
+<div id="g-conv" class="gl">Conversations</div>
+<sc-for list="{{convs}}" as="t" hint-placeholder-count="2">
+<button class="{{t.cls}}" role="option" id="{{t.id}}" aria-selected="{{t.sel}}" aria-label="{{t.label}}" onClick="{{t.pick}}" onMouseEnter="{{t.pick}}">
+<span class="pi"><span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 7px; background: {{t.color}}; color: #FFFFFF; font-size: 11px; font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 1px 2px rgba(0,0,0,.4)">{{t.acct}}</span></span>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<span class="ell" style="font-weight: 600">{{t.f.pre}}<mark>{{t.f.hit}}</mark>{{t.f.post}}</span>
+<span class="ell" style="font-size: 12.5px; color: var(--text2)">{{t.s.pre}}<mark>{{t.s.hit}}</mark>{{t.s.post}}</span>
+</span>
+<span class="k" style="align-self: flex-start; padding-top: 1px">{{t.time}}</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{noLocal}}" hint-placeholder-val="{{false}}">
+<div role="status" style="padding: 14px 12px 4px; color: var(--text2)">Aucun résultat dans le courrier synchronisé sur cet appareil.</div>
+</sc-if>
+
+<sc-if value="{{hasQuery}}" hint-placeholder-val="{{true}}">
+<div role="group" aria-labelledby="g-srv">
+<div id="g-srv" class="gl">Recherche</div>
+<button class="{{srv.cls}}" role="option" id="srv" aria-selected="{{srv.sel}}" onClick="{{srv.pick}}" onMouseEnter="{{srv.pick}}">
+<span class="pi"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.5-9a6 6 0 0 1 11.5 1.5A3.5 3.5 0 0 1 17.5 18zM12 11v4M10 13l2 2 2-2"></path></svg></span>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<span class="ell" style="font-weight: 500">Chercher “{{typed}}” dans tout l’historique sur le serveur</span>
+<span class="ell" style="font-size: 12.5px; color: var(--text2)">Inclut le courrier pas encore synchronisé, sur tous les comptes</span>
+</span>
+</button>
+</div>
+</sc-if>
+</div>
+
+<div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; padding: 10px 14px 12px 16px; border-top: 1px solid var(--line)">
+<div role="group" aria-label="Opérateurs de recherche" style="flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap; gap: 5px">
+<sc-for list="{{ops}}" as="o" hint-placeholder-count="8"><button class="op" title="Ajouter {{o.label}} à la recherche" onClick="{{o.add}}">{{o.label}}</button></sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 5px; flex: none; font-size: 12px; color: var(--text2)"><span class="kb" aria-hidden="true">↑</span><span class="kb" aria-hidden="true">↓</span><span>naviguer</span><span class="kb" aria-hidden="true" style="margin-left: 8px">⏎</span><span>ouvrir</span></div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+const SPARK = "M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z";
+const ACTIONS = [
+  { id: "a-reply", label: "Répondre", key: "R", icon: "M9 14 4 9l5-5M4 9h11a5 5 0 0 1 5 5v6" },
+  { id: "a-all", label: "Répondre à tous", key: "⇧R", icon: "M7 17l-5-5 5-5M12 17l-5-5 5-5M22 18v-2a4 4 0 0 0-4-4H7" },
+  { id: "a-claude", label: "Rédiger une réponse avec Claude", key: "⌘J", icon: SPARK, ai: true },
+  { id: "a-snooze", label: "Reporter…", key: "H", icon: "M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2" },
+  { id: "a-fwd", label: "Transférer", key: "F", icon: "M15 14l5-5-5-5M20 9H9a5 5 0 0 0-5 5v6" },
+  { id: "a-arch", label: "Archiver", key: "E", icon: "m5 12 5 5L20 7" },
+  { id: "a-unread", label: "Marquer comme non lu", key: "U", icon: "M4 6h16v12H4zM4 7l8 6 8-6" },
+  { id: "a-sum", label: "Résumer avec Claude", key: "", icon: SPARK, ai: true },
+  { id: "a-new", label: "Nouveau message", key: "⌘N", icon: "M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" },
+  { id: "a-trash", label: "Mettre à la corbeille", key: "#", icon: "M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" }
+];
+const ACCTS = { P: { name: "Perso", color: "#B45309" }, T: { name: "Travail", color: "#0F766E" }, G: { name: "Gmail", color: "#6D28D9" } };
+const CONVS = [
+  { id: "c1", acct: "T", from: "Camille Roux", subject: "Atelier produit jeudi — ordre du jour", time: "10:42" },
+  { id: "c2", acct: "P", from: "Julien Faure", subject: "Week-end à Annecy", time: "09:31" },
+  { id: "c3", acct: "T", from: "Lucas Petit", subject: "Disponibilités pour un call ?", time: "09:12" },
+  { id: "c4", acct: "G", from: "GitHub", subject: "[mailapp] CI en échec sur main", time: "08:05" },
+  { id: "c5", acct: "P", from: "Mathilde Garnier", subject: "Photos du mariage", time: "Hier" },
+  { id: "c6", acct: "T", from: "Inès Morel", subject: "Retours bêta — réponses au questionnaire", time: "21 oct." },
+  { id: "c7", acct: "P", from: "Atelier Brun", subject: "Réponse à votre demande de devis", time: "14 oct." }
+];
+const OPS = ["from:", "to:", "subject:", "has:attachment", "in:", "is:unread", "before:", "after:"];
+const SK_NAV = [74, 82, 64, 70, 58, 52];
+const SK_ROWS = [[38, 72, 88], [30, 54, 80], [44, 62, 70], [26, 48, 84], [40, 66, 76], [34, 58, 82], [42, 50, 72]];
+// case- and accent-insensitive: "rép" finds "Reporter…" and "réponse"
+const fc = (c) => c.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const fold = (s) => Array.from(s, fc).join("");
+// shortcut: highlight indexes assume each character folds to one character (true for French text); revisit for ligatures
+const seg = (text, q) => {
+  const i = q ? fold(text).indexOf(q) : -1;
+  return i < 0 ? { pre: text, hit: "", post: "" } : { pre: text.slice(0, i), hit: text.slice(i, i + q.length), post: text.slice(i + q.length) };
+};
+console.assert(seg("Reporter…", "rep").hit === "Rep" && seg("Répondre", fold("RÉP")).hit === "Rép", "palette: accent-insensitive match");
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { q: "rép", hi: "a-reply" };
+  }
+  renderVals() {
+    const s = this.state;
+    const typed = s.q.trim();
+    // operators (from:, is:unread…) only feed the server search; the local filter uses the plain words
+    const q = fold(typed).split(/\s+/).filter((w) => w && w.indexOf(":") < 0).join(" ");
+    const acts = ACTIONS.filter((a) => fold(a.label).indexOf(q) >= 0).slice(0, typed ? 10 : 6);
+    const convs = CONVS.filter((c) => fold(c.from + " " + c.subject).indexOf(q) >= 0).slice(0, typed ? 5 : 3);
+    const ids = acts.map((a) => a.id).concat(convs.map((c) => c.id), typed ? ["srv"] : []);
+    const cur = ids.indexOf(s.hi) >= 0 ? s.hi : ids[0];
+    const row = (id) => ({
+      id,
+      sel: id === cur ? "true" : "false",
+      cls: id === cur ? "pr on" : "pr",
+      pick: () => { if (this.state.hi !== id) this.setState({ hi: id }); }
+    });
+    return {
+      query: s.q,
+      typed,
+      hasQuery: typed !== "",
+      activeId: cur || "",
+      onQuery: (e) => this.setState({ q: e.target.value }),
+      onKey: (e) => {
+        if (!ids.length || (e.key !== "ArrowDown" && e.key !== "ArrowUp")) return;
+        e.preventDefault();
+        const i = ids.indexOf(cur) + (e.key === "ArrowDown" ? 1 : -1);
+        this.setState({ hi: ids[(i + ids.length) % ids.length] });
+      },
+      hasActions: acts.length > 0,
+      actions: acts.map((a) => ({ ...row(a.id), l: seg(a.label, q), key: a.key, icon: a.icon, piCls: a.ai ? "pi ai" : "pi" })),
+      hasConvs: convs.length > 0,
+      convs: convs.map((c) => ({
+        ...row(c.id),
+        f: seg(c.from, q),
+        s: seg(c.subject, q),
+        time: c.time,
+        acct: c.acct,
+        color: ACCTS[c.acct].color,
+        label: c.from + ", " + c.subject + ", " + ACCTS[c.acct].name + ", " + c.time
+      })),
+      noLocal: typed !== "" && !acts.length && !convs.length,
+      srv: row("srv"),
+      ops: OPS.map((o) => ({ label: o, add: () => this.setState({ q: (this.state.q.trim() + " " + o).trim() }) })),
+      skNav: SK_NAV.map((w, i) => ({ w, bg: i === 0 ? "rgba(255,255,255,.09)" : "transparent" })),
+      skRows: SK_ROWS.map((r, i) => ({ a: r[0], b: r[1], c: r[2], cls: i === 1 ? "lift" : "" }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>A3 Matière — Ajouter un compte</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&amp;display=swap">
+<style>
+body{margin:0}
+.app{--text:#18181B;--text2:#5F5F68;--acc:#2F6FEB;--accText:#2962CF;--line:rgba(16,24,40,.08)}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;cursor:default}
+input,select{font:inherit;color:inherit;margin:0}
+.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ell{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.slab{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(247,248,251,.9));-webkit-backdrop-filter:blur(30px) saturate(1.4);backdrop-filter:blur(30px) saturate(1.4);box-shadow:inset 0 1px 0 #FFFFFF,inset 0 -2px 0 rgba(16,24,40,.035),0 0 0 1px rgba(16,24,40,.07),0 2px 0 rgba(16,24,40,.045),0 18px 40px -14px rgba(16,24,40,.22)}
+.well{background:rgba(16,24,40,.045);box-shadow:inset 0 1px 2px rgba(16,24,40,.09),inset 0 0 0 1px rgba(16,24,40,.04)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 11px;border-radius:9px;font-size:12.5px;font-weight:500;flex:none;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.ghost{box-shadow:inset 0 0 0 1px rgba(16,24,40,.11)}
+.ghost:hover{background:linear-gradient(180deg,#FFFFFF,#F5F6F9);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 1px 0 rgba(16,24,40,.08),0 4px 10px -5px rgba(16,24,40,.16);transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.pri{background:linear-gradient(180deg,#3170E6,#265DCB);color:#FFFFFF;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 1px #2459C4,0 2px 0 #1E4CA8,0 8px 16px -8px rgba(47,111,235,.7)}
+.pri:hover{transform:translateY(-1px)}
+.pri:active{transform:translateY(1px);box-shadow:inset 0 1px 2px rgba(0,0,0,.2),0 0 0 1px #2459C4}
+.bk{gap:4px;padding:0 10px 0 6px;color:var(--text2)}
+.bk:hover{background:rgba(16,24,40,.06);color:var(--text)}
+.mark{display:flex;align-items:center;justify-content:center;flex:none;color:#FFFFFF;background:linear-gradient(180deg,#3B7BF0,#265DCB);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -2px 0 rgba(0,0,0,.1),0 0 0 1px #2459C4,0 2px 0 #1E4CA8,0 10px 20px -8px rgba(47,111,235,.6)}
+.ttl{margin:0;font-size:26px;font-weight:650;line-height:1.15;letter-spacing:-0.024em}
+.sub{margin:0;font-size:14px;color:var(--text2)}
+.hd{display:flex;align-items:center;gap:14px;margin-top:12px}
+.hdt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.tile{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:11px;flex:none;color:#3F3F46}
+/* provider rows: flat, they take the max relief only under the pointer */
+.prov{display:flex;align-items:center;gap:14px;width:100%;min-height:62px;padding:10px 12px;box-sizing:border-box;border-radius:13px;text-align:left;transition:background .18s ease,box-shadow .18s ease,transform .2s cubic-bezier(.2,.8,.2,1)}
+.prov:not(:disabled):hover{background:linear-gradient(180deg,#FFFFFF,#F6F7FA);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 2px 0 rgba(16,24,40,.07),0 10px 22px -12px rgba(16,24,40,.34);transform:translateY(-1px)}
+.prov:not(:disabled):active{transform:translateY(1px)}
+.go{color:var(--text2);transition:transform .2s cubic-bezier(.2,.8,.2,1),color .2s}
+.prov:hover .go{transform:translateX(2px);color:var(--text)}
+.rt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rtt{font-size:13.5px;font-weight:600}
+.rd{font-size:12.5px;color:var(--text2)}
+.lbl{font-size:12.5px;font-weight:550}
+.fd{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld{display:block;width:100%;height:38px;box-sizing:border-box;padding:0 12px;border:0;border-radius:11px;outline:0;font-size:13.5px;transition:background .16s ease,box-shadow .16s ease}
+.fld::placeholder{color:var(--text2);opacity:1}
+.fld:focus{background:#FFFFFF;box-shadow:0 0 0 1px var(--acc),0 0 0 4px rgba(47,111,235,.16)}
+.fld:focus-visible{outline:0}
+select.fld{-webkit-appearance:none;appearance:none;padding-right:28px}
+.mono{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:12.5px}
+.ft{display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:16px}
+.fn{display:flex;align-items:center;gap:8px;flex:1 1 auto;margin:0;font-size:12px;color:var(--text2)}
+.num{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;flex:none;background:#FFFFFF;box-shadow:0 0 0 1px rgba(16,24,40,.1),0 1px 0 rgba(16,24,40,.06);color:var(--accText);font-size:11px;font-weight:650}
+.dr{display:flex;align-items:center;gap:12px;height:38px}
+.dr+.dr{border-top:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:14px;padding:11px 0;border-top:1px solid var(--line)}
+.spin{position:absolute;inset:0;box-sizing:border-box;border-radius:50%;border:2.5px solid rgba(16,24,40,.08);border-top-color:var(--acc);animation:spin .9s linear infinite}
+.ok{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;flex:none;color:#FFFFFF;background:linear-gradient(180deg,#3B7BF0,#265DCB);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 1px #2459C4,0 2px 0 #1E4CA8,0 10px 20px -8px rgba(47,111,235,.6);animation:pop .4s cubic-bezier(.2,.8,.2,1) both}
+.ok path{stroke-dasharray:24;animation:draw .36s .18s ease both}
+.swatch{position:relative;display:flex}
+.swatch span[aria-hidden]{width:22px;height:22px;border-radius:50%;background:currentColor;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 1px 2px rgba(16,24,40,.25);transition:box-shadow .2s ease,transform .2s cubic-bezier(.2,.8,.2,1)}
+.swatch:hover input:not(:checked)+span{transform:scale(1.1)}
+.swatch input:checked+span{box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px currentColor,0 6px 12px -5px currentColor;transform:scale(1.04)}
+.swatch input:focus-visible+span{outline:2px solid var(--acc);outline-offset:5px}
+.sw{position:relative;width:36px;height:22px;border-radius:11px;flex:none;background:rgba(16,24,40,.2);box-shadow:inset 0 1px 2px rgba(16,24,40,.16);transition:background .22s ease}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:linear-gradient(180deg,#FFFFFF,#F6F7FA);box-shadow:0 0 0 .5px rgba(16,24,40,.1),0 1px 3px rgba(16,24,40,.3);transition:transform .26s cubic-bezier(.2,.8,.2,1)}
+.sw[aria-checked="true"]{background:var(--acc)}
+.sw[aria-checked="true"]::after{transform:translateX(14px)}
+.track{height:6px;border-radius:3px;background:rgba(16,24,40,.08);overflow:hidden}
+.fill{position:relative;width:68%;height:100%;border-radius:3px;overflow:hidden;background:linear-gradient(90deg,#6D9AF2,#2F6FEB);animation:fill 6s cubic-bezier(.2,.8,.2,1) both}
+.fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));animation:sheen 1.8s 1s ease-in-out infinite both}
+@keyframes stepf1{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes stepf2{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes stepb1{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes stepb2{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes draw{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+@keyframes unfold{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@keyframes fill{from{width:4%}to{width:68%}}
+@keyframes sheen{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</helmet>
+<div class="app slab" role="dialog" aria-modal="true" aria-labelledby="ttl" style="position: relative; width: 640px; height: 620px; box-sizing: border-box; overflow: hidden; border-radius: 20px; background-color: #F6F7FA; color: var(--text); font-family: Inter, 'Segoe UI Variable Text', system-ui, -apple-system, sans-serif; font-optical-sizing: auto; font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased">
+<div style="height: 100%; box-sizing: border-box; padding: 26px 32px 24px; animation: {{anim}} .4s cubic-bezier(.2,.8,.2,1) both">
+
+<sc-if value="{{isProvider}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; height: 100%">
+<header style="display: flex; align-items: center; gap: 16px">
+<span class="mark" aria-hidden="true" style="width: 46px; height: 46px; border-radius: 13px"><svg class="i" viewBox="0 0 24 24" style="width: 22px; height: 22px; stroke-width: 1.7"><path d="M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM3 7l9 6 9-6"></path></svg></span>
+<div class="hdt">
+<h1 id="ttl" class="ttl">Ajouter un compte</h1>
+<p class="sub">Choisissez votre fournisseur.</p>
+</div>
+</header>
+
+<nav aria-label="Fournisseurs" style="display: flex; flex-direction: column; gap: 4px; margin: 24px -12px 0">
+<button class="prov" onClick="{{pickMs}}">
+<span class="tile well" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 18px; height: 18px"><path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M3 21h18M8 7h4M8 11h4M8 15h4"></path></svg></span>
+<span class="rt"><span class="rtt">Microsoft 365 ou Outlook.com</span><span class="rd">Connexion sécurisée dans le navigateur</span></span>
+<svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+</button>
+<button class="prov" onClick="{{pickGmail}}">
+<span class="tile well" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 18px; height: 18px"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01"></path></svg></span>
+<span class="rt"><span class="rtt">Gmail</span><span class="rd">Avec un mot de passe d’application, vrais libellés et conversations</span></span>
+<svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+</button>
+<button class="prov" onClick="{{pickImap}}">
+<span class="tile well" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 18px; height: 18px"><path d="M16 12a4 4 0 1 1-8 0a4 4 0 1 1 8 0zM16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-3.6 7.2"></path></svg></span>
+<span class="rt"><span class="rtt">Autre adresse</span><span class="rd">iCloud, Fastmail, votre domaine… en IMAP/SMTP</span></span>
+<svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+</button>
+<button class="prov" disabled="disabled">
+<span class="tile well" aria-hidden="true" style="color: var(--text2)"><svg class="i" viewBox="0 0 24 24" style="width: 18px; height: 18px"><path d="M13 3 5 14h6l-1 7 8-11h-6z"></path></svg></span>
+<span class="rt"><span class="rtt" style="color: var(--text2)">JMAP</span><span class="rd">Fastmail, Stalwart…</span></span>
+<span class="well" style="display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 7px; font-size: 11.5px; font-weight: 550; color: var(--text2)">Bientôt</span>
+</button>
+</nav>
+
+<div style="display: flex; align-items: center; gap: 20px; margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line)">
+<p style="display: flex; align-items: flex-start; gap: 10px; flex: 1 1 auto; margin: 0; font-size: 12px; line-height: 1.5; color: var(--text2)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; margin-top: 2px"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z"></path></svg><span>Vos identifiants restent dans le trousseau du système. Aucun serveur mailapp entre vous et votre fournisseur.</span></p>
+<button class="btn ghost">Annuler</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isMs}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; height: 100%">
+<div style="margin: -6px 0 0 -8px"><button class="btn bk" onClick="{{back}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px"><path d="m15 18-6-6 6-6"></path></svg>Fournisseurs</button></div>
+<div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center">
+<div role="status" style="position: relative; display: flex; align-items: center; justify-content: center; width: 78px; height: 78px">
+<span class="spin" aria-hidden="true"></span>
+<span class="well" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 58px; height: 58px; border-radius: 50%; color: #3F3F46"><svg class="i" viewBox="0 0 24 24" style="width: 22px; height: 22px"><path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M3 21h18M8 7h4M8 11h4M8 15h4"></path></svg></span>
+<span class="sr">En attente de la connexion Microsoft</span>
+</div>
+<h1 id="ttl" class="ttl" style="max-width: 440px; margin-top: 8px">Terminez la connexion dans votre navigateur</h1>
+<p style="max-width: 440px; margin: 0; font-size: 14px; line-height: 1.55; color: var(--text2)">Une page Microsoft vient de s’ouvrir. Connectez-vous, autorisez l’accès à votre messagerie, puis revenez ici : mailapp prend le relais tout seul.</p>
+<button class="btn ghost" onClick="{{reopen}}" style="margin-top: 6px"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Rouvrir la page de connexion</button>
+</div>
+<div class="well" style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 14px">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; color: var(--accText)"><path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6zM9 12l2 2 4-4"></path></svg>
+<p style="margin: 0; font-size: 12.5px; line-height: 1.5"><span style="font-weight: 600">mailapp ne voit jamais votre mot de passe.</span> Microsoft lui remet seulement un jeton révocable, gardé dans le trousseau de cet ordinateur.</p>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isGmail}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; height: 100%">
+<div style="margin: -6px 0 0 -8px"><button class="btn bk" onClick="{{back}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px"><path d="m15 18-6-6 6-6"></path></svg>Fournisseurs</button></div>
+<header class="hd">
+<span class="tile well" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 18px; height: 18px"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01"></path></svg></span>
+<div class="hdt">
+<h1 id="ttl" class="ttl">Connecter Gmail</h1>
+<p class="sub">Avec un mot de passe d’application : vrais libellés et conversations.</p>
+</div>
+</header>
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 22px">
+<div class="fd"><label class="lbl" for="gm-email">Adresse Gmail</label><input id="gm-email" class="fld well" type="email" autocomplete="email" spellcheck="false" placeholder="prenom.nom@gmail.com" value="{{gmailEmail}}" onChange="{{setGmailEmail}}"></div>
+<div class="fd"><label class="lbl" for="gm-pass">Mot de passe d’application</label><input id="gm-pass" class="fld well" type="password" autocomplete="off" spellcheck="false" placeholder="16 lettres, sans espaces"></div>
+</div>
+<section class="well" aria-labelledby="gm-help" style="display: flex; flex-direction: column; gap: 12px; margin-top: 18px; padding: 16px 18px; border-radius: 14px">
+<h2 id="gm-help" style="margin: 0; font-size: 12.5px; font-weight: 600">Créer un mot de passe d’application</h2>
+<ol style="display: flex; flex-direction: column; gap: 9px; margin: 0; padding: 0; list-style: none">
+<li style="display: flex; align-items: flex-start; gap: 10px"><span class="num" aria-hidden="true">1</span><span style="padding-top: 1px">Activez la validation en deux étapes sur votre compte Google.</span></li>
+<li style="display: flex; align-items: flex-start; gap: 10px"><span class="num" aria-hidden="true">2</span><span style="padding-top: 1px">Créez un mot de passe d’application nommé « mailapp ».</span></li>
+<li style="display: flex; align-items: flex-start; gap: 10px"><span class="num" aria-hidden="true">3</span><span style="padding-top: 1px">Collez-le ici : mailapp l’utilise à la place de votre mot de passe Google.</span></li>
+</ol>
+<button class="btn ghost" style="align-self: flex-start; color: var(--accText)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Ouvrir les réglages de sécurité Google</button>
+</section>
+<div class="ft">
+<p class="fn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z"></path></svg>Gardé dans le trousseau du système, envoyé seulement à Google.</p>
+<button class="btn pri" onClick="{{connectGmail}}" style="height: 34px; padding: 0 16px; border-radius: 10px">Se connecter</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isImap}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; height: 100%">
+<div style="margin: -6px 0 0 -8px"><button class="btn bk" onClick="{{back}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px"><path d="m15 18-6-6 6-6"></path></svg>Fournisseurs</button></div>
+<header class="hd">
+<span class="tile well" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 18px; height: 18px"><path d="M16 12a4 4 0 1 1-8 0a4 4 0 1 1 8 0zM16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-3.6 7.2"></path></svg></span>
+<div class="hdt">
+<h1 id="ttl" class="ttl">Autre adresse</h1>
+<p class="sub">iCloud, Fastmail, votre domaine… en IMAP/SMTP.</p>
+</div>
+</header>
+<div style="flex: 1 1 auto; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 16px; margin: 18px -6px 0; padding: 4px 6px">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px">
+<div class="fd"><label class="lbl" for="im-email">Adresse e-mail</label><input id="im-email" class="fld well" type="email" autocomplete="email" spellcheck="false" placeholder="vous@exemple.fr" value="{{imapEmail}}" onChange="{{setImapEmail}}"></div>
+<div class="fd"><label class="lbl" for="im-pass">Mot de passe</label><input id="im-pass" class="fld well" type="password" autocomplete="current-password" placeholder="Mot de passe"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke-width: 2; color: var(--accText)"><path d="m5 12 5 5L20 7"></path></svg>Serveurs détectés automatiquement</div>
+<div class="well" style="display: flex; flex-direction: column; padding: 2px 14px; border-radius: 13px">
+<sc-for list="{{servers}}" as="d" hint-placeholder-count="2">
+<div class="dr">
+<span style="width: 40px; flex: none; font-size: 11.5px; font-weight: 650; color: var(--text2)">{{d.proto}}</span>
+<span class="ell mono" style="flex: 1 1 auto">{{d.host}} : {{d.port}}</span>
+<span style="display: inline-flex; align-items: center; gap: 5px; flex: none; font-size: 12px; color: var(--text2)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z"></path></svg>{{d.sec}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<button class="btn ghost" aria-expanded="{{manualExpanded}}" aria-controls="im-manual" onClick="{{toggleManual}}" style="align-self: flex-start"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; transform: rotate({{chevRot}}); transition: transform .22s cubic-bezier(.2,.8,.2,1)"><path d="m9 6 6 6-6 6"></path></svg>Réglages manuels</button>
+<sc-if value="{{manualOpen}}" hint-placeholder-val="{{false}}">
+<div id="im-manual" style="display: grid; grid-template-columns: 40px minmax(0, 1fr) 72px 124px; align-items: center; gap: 8px 10px; animation: unfold .3s ease both">
+<span></span><span class="lbl" aria-hidden="true">Serveur</span><span class="lbl" aria-hidden="true">Port</span><span class="lbl" aria-hidden="true">Sécurité</span>
+<sc-for list="{{servers}}" as="m" hint-placeholder-count="2">
+<span style="font-size: 11.5px; font-weight: 650; color: var(--text2)">{{m.proto}}</span>
+<label class="sr" for="{{m.hostId}}">Serveur {{m.proto}}</label>
+<input id="{{m.hostId}}" class="fld well mono" type="text" spellcheck="false" value="{{m.host}}" onChange="{{m.onHost}}">
+<label class="sr" for="{{m.portId}}">Port {{m.proto}}</label>
+<input id="{{m.portId}}" class="fld well" type="text" inputmode="numeric" value="{{m.port}}" onChange="{{m.onPort}}" style="font-variant-numeric: tabular-nums">
+<label class="sr" for="{{m.secId}}">Sécurité {{m.proto}}</label>
+<span style="position: relative; display: block">
+<select id="{{m.secId}}" class="fld well" value="{{m.sec}}" onChange="{{m.onSec}}"><option value="SSL/TLS">SSL/TLS</option><option value="STARTTLS">STARTTLS</option></select>
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="position: absolute; top: 12px; right: 10px; width: 14px; height: 14px; color: var(--text2); pointer-events: none"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"></path></svg>
+</span>
+</sc-for>
+</div>
+</sc-if>
+</div>
+<div class="ft">
+<p class="fn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z"></path></svg>Mot de passe gardé dans le trousseau du système.</p>
+<button class="btn pri" onClick="{{connectImap}}" style="height: 34px; padding: 0 16px; border-radius: 10px">Se connecter</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isFinal}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; height: 100%">
+<header style="display: flex; align-items: center; gap: 16px">
+<span class="ok" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 24px; height: 24px; stroke-width: 2.4"><path d="m5 12 5 5L20 7"></path></svg></span>
+<div class="hdt">
+<h1 id="ttl" class="ttl">Compte ajouté</h1>
+<div style="display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 13.5px; color: var(--text2)">
+<span class="ell">{{addr}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; flex: none; height: 22px; padding: 0 9px; border-radius: 11px; box-shadow: inset 0 0 0 1px rgba(16,24,40,.1); font-size: 12.5px; color: var(--text)"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 2px; background: {{color}}; transition: background .2s ease"></span>{{pillName}}</span>
+</div>
+</div>
+</header>
+
+<div style="display: flex; align-items: flex-end; gap: 22px; margin-top: 24px">
+<div class="fd" style="flex: 1 1 auto"><label class="lbl" for="acct-name">Nom du compte</label><input id="acct-name" class="fld well" type="text" spellcheck="false" value="{{name}}" onChange="{{setName}}"></div>
+<div class="fd">
+<span id="lb-color" class="lbl">Couleur</span>
+<div role="radiogroup" aria-labelledby="lb-color" style="display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 4px">
+<sc-for list="{{swatches}}" as="w" hint-placeholder-count="6">
+<label class="swatch" style="color: {{w.c}}"><input class="sr" type="radio" name="acct-color" value="{{w.c}}" checked="{{w.on}}" onChange="{{w.pick}}"><span aria-hidden="true"></span><span class="sr">{{w.n}}</span></label>
+</sc-for>
+</div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; margin-top: 18px">
+<div class="row">
+<div class="rt"><span id="lb-hist" class="rtt" style="font-size: 13px">Historique complet</span><span class="rd" style="font-size: 12px">Copié et chiffré sur cet ordinateur, lisible hors ligne.</span></div>
+<button class="btn ghost" aria-labelledby="lb-hist hist-v" onClick="{{cycleHist}}" style="gap: 8px; padding: 0 9px 0 12px"><span id="hist-v">{{hist}}</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; color: var(--text2)"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"></path></svg></button>
+</div>
+<div class="row">
+<div class="rt"><span id="lb-uni" class="rtt" style="font-size: 13px">Inclure dans la boîte unifiée</span><span id="ds-uni" class="rd" style="font-size: 12px">Ses messages apparaissent dans Tous les comptes.</span></div>
+<button class="sw" role="switch" aria-checked="{{unified}}" aria-labelledby="lb-uni" aria-describedby="ds-uni" onClick="{{toggleUnified}}"></button>
+</div>
+<div class="row">
+<div class="rt"><span id="lb-mcp" class="rtt" style="font-size: 13px">Accès MCP</span><span id="ds-mcp" class="rd" style="font-size: 12px">{{mcpDesc}}</span></div>
+<button class="sw" role="switch" aria-checked="{{mcp}}" aria-labelledby="lb-mcp" aria-describedby="ds-mcp" onClick="{{toggleMcp}}"></button>
+</div>
+</div>
+
+<div class="well" role="status" style="display: flex; flex-direction: column; gap: 9px; margin-top: 10px; padding: 13px 16px 14px; border-radius: 14px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span aria-hidden="true" style="position: relative; width: 14px; height: 14px; flex: none"><span class="spin" style="border-width: 2px"></span></span>
+<span style="font-weight: 600">Synchronisation en cours</span>
+<span style="margin-left: auto; font-size: 12px; color: var(--text2)">Réception déjà disponible</span>
+</div>
+<div class="track" aria-hidden="true"><div class="fill"></div></div>
+<span style="font-size: 12px; color: var(--text2)">L’historique continue en arrière-plan, vous pouvez fermer cette fenêtre.</span>
+</div>
+
+<div class="ft">
+<span style="flex: 1 1 auto"></span>
+<button class="btn pri" onClick="{{done}}" style="height: 34px; padding: 0 18px; border-radius: 10px">Terminer</button>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":640,"height":620}}'>
+const DEF = {
+  microsoft: { name: "Travail", color: "#0F766E", addr: "leo.martin@studio.example" },
+  gmail: { name: "Gmail", color: "#6D28D9", addr: "vous@gmail.com" },
+  imap: { name: "Perso", color: "#B45309", addr: "leo@perso.example" }
+};
+const SWATCHES = [
+  { c: "#B45309", n: "Ambre" },
+  { c: "#0F766E", n: "Sarcelle" },
+  { c: "#6D28D9", n: "Violet" },
+  { c: "#2F6FEB", n: "Bleu" },
+  { c: "#BE123C", n: "Framboise" },
+  { c: "#4D7C0F", n: "Olive" }
+];
+const HIST = ["3 mois", "12 mois", "Tout l’historique"];
+const SRV = { imapHost: "imap.perso.example", imapPort: "993", imapSec: "SSL/TLS", smtpHost: "smtp.perso.example", smtpPort: "465", smtpSec: "SSL/TLS" };
+const FRESH = { gmailEmail: "", imapEmail: "leo@perso.example", manual: false, srv: SRV };
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: "provider", back: false, flip: false, ...FRESH, addr: "", name: "", color: "", hist: 1, unified: true, mcp: false };
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+  go(step, back, extra) {
+    clearTimeout(this.t);
+    this.setState({ step, back, flip: !this.state.flip, ...extra });
+  }
+  // prototype only: pretend the browser sign-in comes back after 2.5 s
+  waitBrowser() {
+    clearTimeout(this.t);
+    this.t = setTimeout(() => this.finish("microsoft"), 2500);
+  }
+  finish(p) {
+    const d = DEF[p];
+    const typed = p === "gmail" ? this.state.gmailEmail : p === "imap" ? this.state.imapEmail : "";
+    this.go("finalize", false, { addr: typed.trim() || d.addr, name: d.name, color: d.color, hist: 1, unified: true, mcp: false });
+  }
+  setSrv(k, v) { this.setState({ srv: { ...this.state.srv, [k]: v } }); }
+  renderVals() {
+    const s = this.state;
+    const server = (proto, p) => ({
+      proto,
+      host: s.srv[p + "Host"],
+      port: s.srv[p + "Port"],
+      sec: s.srv[p + "Sec"],
+      hostId: p + "-host",
+      portId: p + "-port",
+      secId: p + "-sec",
+      onHost: (e) => this.setSrv(p + "Host", e.target.value),
+      onPort: (e) => this.setSrv(p + "Port", e.target.value),
+      onSec: (e) => this.setSrv(p + "Sec", e.target.value)
+    });
+    return {
+      anim: (s.back ? "stepb" : "stepf") + (s.flip ? "1" : "2"),
+      isProvider: s.step === "provider",
+      isMs: s.step === "microsoft",
+      isGmail: s.step === "gmail",
+      isImap: s.step === "imap",
+      isFinal: s.step === "finalize",
+      pickMs: () => { this.go("microsoft", false); this.waitBrowser(); },
+      pickGmail: () => this.go("gmail", false),
+      pickImap: () => this.go("imap", false),
+      back: () => this.go("provider", true),
+      reopen: () => this.waitBrowser(),
+      gmailEmail: s.gmailEmail,
+      setGmailEmail: (e) => this.setState({ gmailEmail: e.target.value }),
+      connectGmail: () => this.finish("gmail"),
+      imapEmail: s.imapEmail,
+      setImapEmail: (e) => this.setState({ imapEmail: e.target.value }),
+      connectImap: () => this.finish("imap"),
+      servers: [server("IMAP", "imap"), server("SMTP", "smtp")],
+      manualOpen: s.manual,
+      manualExpanded: s.manual ? "true" : "false",
+      chevRot: s.manual ? "90deg" : "0deg",
+      toggleManual: () => this.setState({ manual: !s.manual }),
+      addr: s.addr,
+      name: s.name,
+      pillName: s.name.trim() || "Sans nom",
+      setName: (e) => this.setState({ name: e.target.value }),
+      color: s.color,
+      swatches: SWATCHES.map((w) => ({ ...w, on: w.c === s.color, pick: () => this.setState({ color: w.c }) })),
+      hist: HIST[s.hist],
+      cycleHist: () => this.setState({ hist: (s.hist + 1) % HIST.length }),
+      unified: s.unified ? "true" : "false",
+      toggleUnified: () => this.setState({ unified: !s.unified }),
+      mcp: s.mcp ? "true" : "false",
+      mcpDesc: s.mcp ? "Les agents externes peuvent lire ce compte. Rien n’est envoyé sans vous." : "Désactivé par défaut : les agents externes ne voient pas ce compte.",
+      toggleMcp: () => this.setState({ mcp: !s.mcp }),
+      done: () => this.go("provider", true, FRESH)
+    };
+  }
+}
+</script>
+</body>
+</html>

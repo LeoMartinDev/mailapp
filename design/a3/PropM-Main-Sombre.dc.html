@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>A3 Matière — Réception, sombre</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&amp;display=swap">
+<style>
+body{margin:0}
+.app{--text:#EDEDEF;--text2:#A1A1AA;--acc:#2F6FEB;--accText:#82A9F3;--ring:#5B8FF5;--line:rgba(255,255,255,.08);color-scheme:dark}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;cursor:default}
+input{font:inherit;color:inherit;margin:0}
+input::placeholder{color:#8E8E97}
+a{color:var(--accText)}
+.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ell{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* dark relief: light only on the top rim, thickness drawn with darker edges below */
+.slab{background:linear-gradient(180deg,rgba(22,22,26,.95),rgba(15,15,18,.95));-webkit-backdrop-filter:blur(30px) saturate(1.3);backdrop-filter:blur(30px) saturate(1.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -2px 0 rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.55),0 2px 0 rgba(0,0,0,.35),0 18px 40px -14px rgba(0,0,0,.65)}
+.lift{background:linear-gradient(180deg,#232428,#1A1B1E);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(0,0,0,.6),0 2px 0 rgba(0,0,0,.45),0 10px 22px -12px rgba(0,0,0,.75)}
+.chip{background:linear-gradient(180deg,#212226,#18191C);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(0,0,0,.55),0 1px 0 rgba(0,0,0,.45),0 4px 10px -5px rgba(0,0,0,.55)}
+.well{background:rgba(0,0,0,.24);box-shadow:inset 0 1px 2px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.04)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 11px;border-radius:9px;font-size:12.5px;font-weight:500;flex:none;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.ghost{box-shadow:inset 0 0 0 1px rgba(255,255,255,.13)}
+.ghost:hover{background:linear-gradient(180deg,#212226,#18191C);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(0,0,0,.55),0 1px 0 rgba(0,0,0,.45),0 4px 10px -5px rgba(0,0,0,.55);transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.pri{background:linear-gradient(180deg,#3170E6,#265DCB);color:#FFFFFF;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 1px #1A3F8A,0 2px 0 #142F69,0 8px 18px -8px rgba(47,111,235,.6)}
+.pri:hover{transform:translateY(-1px)}
+.pri:active{transform:translateY(1px);box-shadow:inset 0 1px 2px rgba(0,0,0,.3),0 0 0 1px #1A3F8A}
+.ib{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;color:var(--text2);flex:none;transition:background .15s,color .15s}
+.ib:hover{background:rgba(255,255,255,.07);color:var(--text)}
+.nav{display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 10px;border-radius:10px;box-sizing:border-box;text-align:left;white-space:nowrap;color:var(--text2);transition:background .18s,color .18s}
+.nav:not([aria-current]):hover{background:rgba(255,255,255,.05);color:var(--text)}
+.nav[aria-current]{background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);color:var(--text);font-weight:550}
+.n{margin-left:auto;font-size:12px;font-variant-numeric:tabular-nums}
+.search{background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);transition:background .18s}
+.search:hover{background:rgba(255,255,255,.09)}
+.sp{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;font-size:12px;font-weight:650;transition:background .2s,box-shadow .2s,transform .2s cubic-bezier(.2,.8,.2,1)}
+.sp:hover{background:rgba(255,255,255,.06)}
+.sp.on{background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.sp:active{transform:scale(.94)}
+.r{position:relative;z-index:1;display:flex;align-items:flex-start;gap:12px;max-height:140px;padding:11px 12px 12px 10px;border-radius:13px;overflow:hidden;transition:max-height .3s ease,opacity .24s ease,transform .3s cubic-bezier(.2,.8,.2,1),padding .3s ease,background .2s ease,box-shadow .2s ease}
+.r:not(.on):not(.out):not(.sel):hover{background:rgba(255,255,255,.045)}
+.r.on{background:linear-gradient(180deg,#232428,#1A1B1E);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(0,0,0,.6),0 2px 0 rgba(0,0,0,.45),0 10px 22px -12px rgba(0,0,0,.75)}
+.r.out{max-height:0;opacity:0;transform:translateX(36px);padding-top:0;padding-bottom:0}
+.hl{position:absolute;z-index:0;left:10px;right:14px;border-radius:13px;pointer-events:none;transition:top .36s cubic-bezier(.3,1.3,.5,1),height .3s cubic-bezier(.2,.8,.2,1),opacity .2s ease}
+.ck{display:flex;align-items:center;justify-content:center;width:20px;height:20px;margin-top:1px;border-radius:50%;flex:none;color:transparent;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3);transition:background .18s,box-shadow .18s,color .18s,transform .18s}
+.ck.u{box-shadow:inset 0 0 0 2px var(--ring)}
+.ck:hover{box-shadow:inset 0 0 0 2px var(--ring);color:var(--ring);transform:scale(1.08)}
+.r.out .ck{background:var(--acc);box-shadow:none;color:#FFFFFF}
+.ck path{stroke-dasharray:20;stroke-dashoffset:0}
+.r.out .ck path{animation:draw .26s ease both}
+.main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
+.bar{display:inline-flex;align-items:center;height:32px;border-radius:10px;overflow:hidden;flex:none}
+.bb{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;font-size:12.5px;font-weight:500;transition:background .15s}
+.bb:hover{background:rgba(255,255,255,.06)}
+.bb:active{background:rgba(0,0,0,.2)}
+.bb .k{color:var(--text2);font-size:11.5px}
+.dv{width:1px;height:16px;background:rgba(255,255,255,.1);flex:none}
+.sheet{position:relative;display:flex;flex-direction:column;gap:8px;box-sizing:border-box;border-radius:13px;text-align:left;background:linear-gradient(180deg,#1E1F23,#17181B);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(0,0,0,.5),0 2px 0 rgba(0,0,0,.32),0 8px 16px -12px rgba(0,0,0,.65);transition:margin .34s cubic-bezier(.2,.8,.2,1),transform .2s ease}
+button.sheet:hover{transform:translateY(-1px)}
+.av{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:600;color:var(--text2);flex:none}
+@keyframes draw{from{stroke-dashoffset:20}to{stroke-dashoffset:0}}
+@keyframes rin1{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes rin2{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes tin{from{opacity:0;transform:translate(-50%,12px) scale(.98)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes unfold{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:900px){.app{height:auto!important}.cols{flex-wrap:wrap!important}.pane{flex:1 1 100%!important;max-width:none!important}}
+</style>
+</helmet>
+<div class="app" style="position: relative; height: 100vh; min-height: 760px; overflow: hidden; background: #050506; color: var(--text); font-family: Inter, 'Segoe UI Variable Text', system-ui, -apple-system, sans-serif; font-optical-sizing: auto; font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased">
+
+<sc-for list="{{frames}}" as="f" hint-placeholder-count="4">
+<span aria-hidden="true" style="position: absolute; inset: 0; background: {{f.bg}}; opacity: {{f.op}}; transition: opacity .7s ease"></span>
+</sc-for>
+<svg aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.07; mix-blend-mode: overlay; pointer-events: none"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="100%" height="100%" filter="url(#grain)"></rect></svg>
+
+<div class="cols" style="position: relative; display: flex; gap: 10px; height: 100%; box-sizing: border-box; padding: 10px">
+
+<nav class="pane" aria-label="Boîtes aux lettres" style="flex: 0 0 216px; display: flex; flex-direction: column; gap: 16px; padding: 6px 4px 4px; overflow: auto">
+<div style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 2px 0 6px">
+<span aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 8px; background: {{spaceColor}}; color: #FFFFFF; font-size: 11.5px; font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 1px 2px rgba(0,0,0,.4); transition: background .5s ease">
+<sc-if value="{{spaceIsAll}}" hint-placeholder-val="{{true}}"><span style="display: grid; grid-template-columns: repeat(2, 5px); gap: 3px"><span style="width: 5px; height: 5px; border-radius: 50%; background: #FFFFFF"></span><span style="width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.75)"></span><span style="width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.75)"></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #FFFFFF"></span></span></sc-if>
+<sc-if value="{{spaceIsAcct}}" hint-placeholder-val="{{false}}">{{spaceShort}}</sc-if>
+</span>
+<span class="ell" style="flex: 1 1 auto; font-size: 15px; font-weight: 650; letter-spacing: -0.012em">{{spaceName}}</span>
+<button class="ib" aria-label="Masquer la barre latérale"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9 4v16"></path></svg></button>
+</div>
+<button class="search" style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px 0 11px; border-radius: 11px; color: var(--text2); text-align: left"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg><span style="flex: 1 1 auto">Rechercher</span><span style="font-size: 11.5px">⌘K</span></button>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<button class="nav" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--accText)"><path d="M3 13h5l1.5 2.5h5L16 13h5M5.5 5h13L21 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5z"></path></svg>Réception<span class="n" style="color: var(--text2)">{{unread}}</span></button>
+<button class="nav"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5M4 9h11a5 5 0 0 1 5 5v6"></path></svg>À répondre<span class="n">2</span></button>
+<button class="nav"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2"></path></svg>Reportés<span class="n">2</span></button>
+<button class="nav"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4"></path></svg>Brouillons<span class="n">1</span></button>
+<button class="nav"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"></path></svg>Envoyés</button>
+<button class="nav"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v4H3zM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"></path></svg>Archive</button>
+</div>
+<div style="flex-grow: 1"></div>
+<div style="display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 12px; color: var(--text2)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; color: var(--accText)"><path d="M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z"></path></svg>Claude prêt · MCP actif</div>
+<div role="group" aria-label="Comptes" style="display: flex; align-items: center; gap: 6px; padding: 4px 4px 2px">
+<sc-for list="{{spaces}}" as="x" hint-placeholder-count="4">
+<button class="{{x.cls}}" aria-label="{{x.label}}" aria-pressed="{{x.pressed}}" title="{{x.label}}" onClick="{{x.pick}}" style="color: {{x.tc}}">
+<sc-if value="{{x.isAll}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="display: grid; grid-template-columns: repeat(2, 6px); gap: 3px"><span style="width: 6px; height: 6px; border-radius: 50%; background: #6EA0F7"></span><span style="width: 6px; height: 6px; border-radius: 50%; background: #E08A3C"></span><span style="width: 6px; height: 6px; border-radius: 50%; background: #2BB3A0"></span><span style="width: 6px; height: 6px; border-radius: 50%; background: #A37BF5"></span></span></sc-if>
+<sc-if value="{{x.letter}}" hint-placeholder-val="{{false}}"><span aria-hidden="true">{{x.short}}</span></sc-if>
+</button>
+</sc-for>
+<span style="flex: 1 1 auto"></span>
+<button class="ib" aria-label="Réglages"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1M15 4v4M9 10v4M17 16v4"></path></svg></button>
+</div>
+</nav>
+
+<section class="pane slab" aria-label="Conversations" style="flex: 1 1 auto; min-width: 0; max-width: {{listMax}}; display: flex; flex-direction: column; overflow: hidden; border-radius: 18px; transition: max-width .45s cubic-bezier(.2,.8,.2,1)">
+<header style="display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 14px 0 22px; flex: none">
+<h1 style="margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.01em">Réception</h1>
+<span style="font-size: 12.5px; color: var(--text2)">{{unread}} non lus</span>
+<span style="flex: 1 1 auto"></span>
+<div role="group" aria-label="Filtre" class="well" style="display: flex; padding: 3px; border-radius: 10px; flex: none"><button class="chip" aria-pressed="true" style="height: 24px; padding: 0 10px; border-radius: 7px; font-size: 12px; font-weight: 550">Tout</button><button aria-pressed="false" style="height: 24px; padding: 0 10px; border-radius: 7px; font-size: 12px; color: var(--text2)">Non lus</button></div>
+</header>
+<div style="flex: 1 1 auto; overflow: auto">
+<div style="position: relative; padding: 0 14px 16px 10px">
+<div class="hl lift" aria-hidden="true" style="top: {{hl.top}}px; height: {{hl.h}}px; opacity: {{hl.op}}"></div>
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="2">
+<div style="display: flex; flex-direction: column; gap: 3px">
+<div style="position: relative; z-index: 1; padding: 12px 12px 6px; font-size: 12px; font-weight: 600; color: var(--text2)">{{g.label}}</div>
+<sc-for list="{{g.rows}}" as="t" hint-placeholder-count="4">
+<div class="r {{t.cls}}" ref="{{t.ref}}">
+<button class="{{t.ckCls}}" aria-label="{{t.archiveLabel}}" title="Archiver · E" onClick="{{t.archive}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; stroke-width: 2.6"><path d="m5 12 5 5L20 7"></path></svg></button>
+<button class="main" onClick="{{t.pick}}" aria-current="{{t.current}}" aria-label="{{t.rowLabel}}">
+<span style="display: flex; align-items: center; gap: 8px; width: 100%">
+<span class="ell" style="flex: 1 1 auto; font-weight: {{t.weight}}">{{t.from}}</span>
+<sc-if value="{{t.showAcct}}" hint-placeholder-val="{{true}}"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 2px; background: {{t.dotColor}}; flex: none"></span></sc-if>
+<span style="flex: none; font-size: 12px; color: var(--text2); font-variant-numeric: tabular-nums">{{t.time}}</span>
+</span>
+<span class="ell" style="font-weight: {{t.sweight}}">{{t.subject}}</span>
+<span class="ell" style="font-size: 12.5px; color: var(--text2)">{{t.preview}}</span>
+<sc-if value="{{t.badge}}" hint-placeholder-val="{{false}}"><span class="well" style="display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; height: 22px; margin-top: 5px; padding: 0 8px; border-radius: 7px; font-size: 11.5px; font-weight: 500"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 11px; height: 11px; color: var(--accText)"><path d="M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z"></path></svg>{{t.badge}}</span></sc-if>
+</button>
+</div>
+</sc-for>
+</div>
+</sc-for>
+<sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+<div role="status" style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 80px 24px; text-align: center; animation: pop .4s cubic-bezier(.2,.8,.2,1) both">
+<span class="well" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; color: var(--accText)"><svg class="i" viewBox="0 0 24 24" style="width: 24px; height: 24px; stroke-width: 2"><path d="m5 12 5 5L20 7"></path></svg></span>
+<span style="font-size: 17px; font-weight: 650; letter-spacing: -0.01em">Tout est traité</span>
+<span style="color: var(--text2)">Rien de nouveau dans {{spaceName}}.</span>
+</div>
+</sc-if>
+</div>
+</div>
+</section>
+
+<sc-if value="{{hasReader}}" hint-placeholder-val="{{true}}">
+<main class="pane slab" style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 18px; animation: {{readerAnim}} .42s cubic-bezier(.2,.8,.2,1) both">
+<div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 14px 14px 4px 22px; flex: none">
+<div role="toolbar" aria-label="Actions sur la conversation" class="bar chip">
+<button class="bb" onClick="{{archiveCur}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="m5 12 5 5L20 7"></path></svg>Archiver<span class="k">E</span></button>
+<span class="dv" aria-hidden="true"></span>
+<button class="bb"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2"></path></svg>Reporter<span class="k">H</span></button>
+<span class="dv" aria-hidden="true"></span>
+<button class="bb"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M9 14 4 9l5-5M4 9h11a5 5 0 0 1 5 5v6"></path></svg>Répondre<span class="k">R</span></button>
+</div>
+<span style="flex-grow: 1"></span>
+<button class="ib" aria-label="Plus d’actions"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
+<button class="ib" aria-label="Fermer la lecture" title="Fermer · Échap" onClick="{{close}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+</div>
+
+<div style="flex: 1 1 auto; overflow: auto">
+<article style="max-width: 660px; margin: 0 auto; box-sizing: border-box; padding: 14px 36px 28px; display: flex; flex-direction: column; gap: 20px">
+<header style="display: flex; flex-direction: column; gap: 8px; padding: 0 4px">
+<h2 style="margin: 0; font-size: 27px; font-weight: 650; line-height: 1.16; letter-spacing: -0.024em">{{r.subject}}</h2>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text2)">
+<span style="display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; border-radius: 11px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); color: var(--text)"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 2px; background: {{r.acctColor}}"></span>{{r.acctName}}</span>
+<span>{{r.count}}</span>
+</div>
+</header>
+
+<sc-if value="{{r.hasSummary}}" hint-placeholder-val="{{true}}">
+<section aria-label="Résumé par Claude" class="well" style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 16px; border-radius: 14px">
+<div style="display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--accText)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z"></path></svg>Résumé par Claude</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.55">{{r.summary}}</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{r.actions}}" as="a" hint-placeholder-count="2"><button class="btn ghost">{{a.label}}</button></sc-for>
+</div>
+</section>
+</sc-if>
+
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{r.earlier}}" as="m" hint-placeholder-count="2">
+<button class="sheet" aria-expanded="{{m.expanded}}" onClick="{{m.toggle}}" style="z-index: {{m.z}}; margin: 0 {{m.inset}}px {{m.gap}}px; padding: 11px 16px {{m.padB}}px">
+<span style="display: flex; align-items: center; gap: 10px; width: 100%">
+<span class="av well" aria-hidden="true" style="width: 22px; height: 22px; font-size: 9px">{{m.ini}}</span>
+<span style="flex: none; font-weight: 600">{{m.from}}</span>
+<span class="ell" style="flex: 1 1 auto; color: var(--text2); opacity: {{m.snipOp}}">{{m.snippet}}</span>
+<span style="flex: none; font-size: 12px; color: var(--text2)">{{m.when}}</span>
+</span>
+<sc-if value="{{m.isOpen}}" hint-placeholder-val="{{false}}">
+<span style="display: flex; flex-direction: column; gap: 8px; padding-left: 32px; font-size: 14px; line-height: 1.6; animation: unfold .3s ease both">
+<sc-for list="{{m.body}}" as="p" hint-placeholder-count="2"><span>{{p.text}}</span></sc-for>
+</span>
+</sc-if>
+</button>
+</sc-for>
+<div class="sheet" style="z-index: 10; padding: 18px 20px 20px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span class="av well" aria-hidden="true" style="width: 32px; height: 32px; font-size: 11px">{{r.ini}}</span>
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 600">{{r.from}}</span>
+<span class="ell" style="font-size: 12px; color: var(--text2)">à {{r.to}}</span>
+</div>
+<span style="flex: none; font-size: 12px; color: var(--text2)">{{r.when}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 6px; font-size: 14.5px; line-height: 1.65">
+<sc-for list="{{r.body}}" as="p" hint-placeholder-count="3"><p style="margin: 0">{{p.text}}</p></sc-for>
+</div>
+<sc-if value="{{r.hasAttach}}" hint-placeholder-val="{{false}}">
+<button class="btn ghost" style="align-self: flex-start; height: 44px; margin-top: 6px; padding: 0 14px 0 8px; border-radius: 12px; gap: 10px"><span class="well" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; font-size: 9px; font-weight: 700; color: var(--text2)">PDF</span><span style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.3"><span>{{r.attach}}</span><span style="font-size: 11.5px; color: var(--text2); font-weight: 400">{{r.attachSize}}</span></span></button>
+</sc-if>
+</div>
+</div>
+</article>
+</div>
+
+<div style="flex: none; padding: 10px 14px 14px">
+<div class="well" style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 7px 0 16px; border-radius: 14px">
+<label class="sr" for="rp">Répondre</label>
+<input id="rp" type="text" placeholder="Répondre à {{r.from}}…" style="flex: 1 1 auto; min-width: 0; border: 0; outline: 0; padding: 0; background: transparent; font-size: 13.5px">
+<button class="btn ghost"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; color: var(--accText)"><path d="M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z"></path></svg>Rédiger avec Claude</button>
+<button class="btn pri" aria-label="Envoyer" style="width: 34px; padding: 0"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px; stroke-width: 2"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></button>
+</div>
+</div>
+</main>
+</sc-if>
+</div>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+<div role="status" style="position: absolute; left: 50%; bottom: 24px; z-index: 5; display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 6px 0 16px; border-radius: 13px; background: rgba(36,37,42,.97); color: #F4F4F5; box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 0 0 1px rgba(0,0,0,.5), 0 12px 30px -8px rgba(0,0,0,.7); white-space: nowrap; animation: tin .34s cubic-bezier(.2,.8,.2,1) both">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; color: #8DB4FF"><path d="m5 12 5 5L20 7"></path></svg>
+<span>Archivé · <span style="color: #D4D4D8">{{toastSubject}}</span></span>
+<button onClick="{{undo}}" style="height: 30px; padding: 0 12px; border-radius: 9px; background: rgba(255,255,255,.1); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); color: #FFFFFF; font-weight: 600; font-size: 12.5px">Annuler</button>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+const THREADS = [
+  { id: "t1", acct: "T", today: true, from: "Camille Roux", to: "vous, Inès Morel", time: "10:42", when: "aujourd’hui 10:42", subject: "Atelier produit jeudi — ordre du jour", preview: "Voici l’ordre du jour proposé pour jeudi : revue des retours bêta…",
+    summary: "Atelier jeudi, 14 h – 16 h en salle Lumière : retours bêta, puis priorisation du trimestre. Camille attend votre confirmation avant mercredi soir.",
+    actions: ["Confirmer ma présence", "Proposer un autre créneau"], attach: "synthese-retours-beta.pdf", attachSize: "1,2 Mo",
+    earlier: [
+      { id: "m1", from: "Inès Morel", when: "28 oct.", snippet: "Je pourrai être là à partir de 14 h, pas avant. On peut décaler ?", body: ["Je pourrai être là à partir de 14 h, pas avant. On peut décaler le début ?", "Inès"] },
+      { id: "m2", from: "Vous", when: "28 oct.", snippet: "Parfait, on cale jeudi 14 h – 16 h en salle Lumière.", body: ["Parfait, on cale jeudi 14 h – 16 h en salle Lumière.", "Léo"] }
+    ],
+    body: ["Bonjour à tous,", "Voici l’ordre du jour proposé pour jeudi : revue des retours bêta (30 min), priorisation du trimestre (45 min), puis points divers.", "Pouvez-vous me confirmer votre présence d’ici mercredi soir ? Je joins la synthèse des retours.", "Camille"] },
+  { id: "t2", acct: "P", today: true, unread: true, from: "Julien Faure", to: "vous, Mathilde Garnier", time: "09:31", when: "aujourd’hui 09:31", subject: "Week-end à Annecy", preview: "Je réserve le gîte si vous confirmez avant vendredi.",
+    earlier: [
+      { id: "m3", from: "Vous", when: "hier", snippet: "On est partants ! Il reste de la place pour deux ?", body: ["On est partants ! Il reste de la place pour deux ?", "Léo"] }
+    ],
+    body: ["Salut !", "Je réserve le gîte si vous confirmez avant vendredi. Il reste deux chambres côté lac.", "Dis-moi vite,", "Julien"] },
+  { id: "t3", acct: "T", today: true, unread: true, from: "Lucas Petit", to: "vous", time: "09:12", when: "aujourd’hui 09:12", subject: "Disponibilités pour un call ?", preview: "Est-ce que tu aurais 30 min cette semaine ?", badge: "Réponse prête",
+    summary: "Lucas veut 30 minutes cette semaine pour parler de l’intégration. Une réponse est prête : jeudi 11 h ou vendredi 15 h.",
+    actions: ["Relire la réponse", "Proposer d’autres horaires"],
+    body: ["Salut Léo,", "Est-ce que tu aurais 30 min cette semaine pour qu’on parle de l’intégration ? Je suis assez libre jeudi et vendredi.", "Lucas"] },
+  { id: "t4", acct: "G", today: true, unread: true, from: "GitHub", to: "vous", time: "08:05", when: "aujourd’hui 08:05", subject: "[mailapp] CI en échec sur main", preview: "cargo check --target aarch64-apple-ios a échoué.",
+    body: ["La vérification cargo check --target aarch64-apple-ios a échoué sur main, dans crates/application.", "Consultez les journaux du workflow pour le détail."] },
+  { id: "t5", acct: "P", from: "Atelier Brun", to: "vous", time: "Hier", when: "hier 18:20", subject: "Votre devis n° 2026-118", preview: "Vous trouverez ci-joint le devis pour la cuisine.", attach: "devis-2026-118.pdf", attachSize: "320 Ko",
+    body: ["Bonjour,", "Vous trouverez ci-joint le devis pour la rénovation de la cuisine. Il reste valable un mois.", "Bien cordialement,", "Atelier Brun"] },
+  { id: "t6", acct: "P", from: "Mathilde Garnier", to: "vous", time: "Hier", when: "hier 16:02", subject: "Photos du mariage", preview: "Voilà le lien vers l’album, il expire dans 30 jours.",
+    body: ["Coucou !", "Voilà le lien vers l’album, il expire dans 30 jours. Pense à télécharger celles que tu veux garder.", "Bises,", "Mathilde"] },
+  { id: "t7", acct: "T", unread: true, from: "Inès Morel", to: "vous", time: "28 oct.", when: "28 oct. 17:40", subject: "Retours bêta — synthèse v2", preview: "J’ai regroupé les retours par thème.",
+    body: ["Hello,", "J’ai regroupé les retours par thème. Il manque encore la partie onboarding, je la complète demain.", "Inès"] },
+  { id: "t8", acct: "G", from: "Lettre Rust FR", to: "vous", time: "27 oct.", when: "27 oct. 07:30", subject: "N° 212 — closures async, GPUI et Blitz", preview: "Au sommaire : le rendu HTML en Rust pur…",
+    body: ["Au sommaire cette semaine : le rendu HTML en Rust pur, et un retour d’expérience sur GPUI hors de Zed."] }
+];
+// color = tiles and dots, tc = lighter shade for text on the dark frame
+const SPACES = [
+  { key: "all", label: "Tous les comptes", short: "", color: "#2F6FEB", tc: "#6EA0F7" },
+  { key: "P", label: "Perso", short: "P", color: "#B45309", tc: "#E08A3C" },
+  { key: "T", label: "Travail", short: "T", color: "#0F766E", tc: "#2BB3A0" },
+  { key: "G", label: "Gmail", short: "G", color: "#6D28D9", tc: "#A37BF5" }
+];
+const FRAMES = {
+  all: "linear-gradient(155deg, #0C1120 0%, #070709 50%, #0F0C18 100%)",
+  P: "linear-gradient(155deg, #170F06 0%, #080809 50%, #140B09 100%)",
+  T: "linear-gradient(155deg, #061512 0%, #08090A 50%, #070F15 100%)",
+  G: "linear-gradient(155deg, #110B1E 0%, #08080B 50%, #150B13 100%)"
+};
+const initials = (name) => name === "Vous" ? "LM" : name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.rowEls = {};
+    this.state = { space: "all", sel: "t1", open: true, gone: [], leaving: null, toast: null, flip: false, expanded: null, hl: { top: 0, h: 0, op: 0 }, hlReady: false };
+  }
+  componentDidMount() { this.raf = requestAnimationFrame(() => this.measure()); }
+  componentDidUpdate() { this.measure(); }
+  componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); cancelAnimationFrame(this.raf); }
+  // the selection plate is one element that slides to the selected row
+  measure() {
+    const s = this.state;
+    const el = s.open && s.sel !== s.leaving ? this.rowEls[s.sel] : null;
+    if (!el || !el.isConnected) {
+      if (s.hl.op !== 0) this.setState({ hl: { ...s.hl, op: 0 } });
+      return;
+    }
+    const top = el.offsetTop, h = el.offsetHeight;
+    if (top !== s.hl.top || h !== s.hl.h || s.hl.op !== 1 || !s.hlReady) this.setState({ hl: { top, h, op: 1 }, hlReady: true });
+  }
+  visible(gone, space) {
+    return THREADS.filter((t) => gone.indexOf(t.id) < 0 && (space === "all" || t.acct === space));
+  }
+  pick(id) { this.setState({ sel: id, open: true, expanded: null, flip: id === this.state.sel && this.state.open ? this.state.flip : !this.state.flip }); }
+  archive(id) {
+    if (this.state.leaving) return;
+    this.setState({ leaving: id });
+    clearTimeout(this.t1);
+    this.t1 = setTimeout(() => {
+      const gone = this.state.gone.concat([id]);
+      const vis = this.visible(gone, this.state.space);
+      const moved = this.state.sel === id;
+      const sel = moved ? (vis[0] ? vis[0].id : null) : this.state.sel;
+      this.setState({ gone, leaving: null, toast: id, sel, expanded: moved ? null : this.state.expanded, flip: moved ? !this.state.flip : this.state.flip });
+      clearTimeout(this.t2);
+      this.t2 = setTimeout(() => this.setState({ toast: null }), 5000);
+    }, 300);
+  }
+  undo() {
+    const id = this.state.toast;
+    if (!id) return;
+    clearTimeout(this.t2);
+    this.setState({ gone: this.state.gone.filter((g) => g !== id), toast: null, sel: id, open: true, expanded: null, flip: !this.state.flip });
+  }
+  setSpace(k) {
+    const vis = this.visible(this.state.gone, k);
+    const keep = vis.some((t) => t.id === this.state.sel);
+    this.setState({ space: k, sel: keep ? this.state.sel : (vis[0] ? vis[0].id : null), expanded: keep ? this.state.expanded : null, flip: keep ? this.state.flip : !this.state.flip });
+  }
+  renderVals() {
+    const s = this.state;
+    const color = {};
+    SPACES.forEach((x) => { color[x.key] = x.color; });
+    const space = SPACES.find((x) => x.key === s.space);
+    const vis = this.visible(s.gone, s.space);
+    const row = (t) => {
+      const selected = t.id === s.sel && s.open;
+      return {
+        ...t,
+        dotColor: color[t.acct],
+        showAcct: s.space === "all",
+        cls: t.id === s.leaving ? "out" : (selected ? (s.hlReady ? "sel" : "on") : ""),
+        ckCls: t.unread ? "ck u" : "ck",
+        current: selected ? "true" : undefined,
+        weight: t.unread ? 650 : 550,
+        sweight: t.unread ? 550 : 400,
+        rowLabel: t.from + ", " + t.subject + (t.unread ? ", non lu" : ""),
+        ref: (el) => { if (el) this.rowEls[t.id] = el; else delete this.rowEls[t.id]; },
+        pick: () => this.pick(t.id),
+        archive: () => this.archive(t.id),
+        archiveLabel: "Archiver « " + t.subject + " »"
+      };
+    };
+    const today = vis.filter((t) => t.today).map(row);
+    const earlierRows = vis.filter((t) => !t.today).map(row);
+    const groups = [];
+    if (today.length) groups.push({ label: "Aujourd’hui", rows: today });
+    if (earlierRows.length) groups.push({ label: "Plus tôt", rows: earlierRows });
+    const cur = s.open ? (vis.find((t) => t.id === s.sel) || null) : null;
+    let r = { body: [], actions: [], earlier: [] };
+    if (cur) {
+      const prev = cur.earlier || [];
+      r = {
+        ...cur,
+        ini: initials(cur.from),
+        acctName: SPACES.find((x) => x.key === cur.acct).label,
+        acctColor: color[cur.acct],
+        count: (prev.length + 1) + (prev.length ? " messages" : " message"),
+        hasSummary: !!cur.summary,
+        hasAttach: !!cur.attach,
+        actions: (cur.actions || []).map((a) => ({ label: a })),
+        body: cur.body.map((p) => ({ text: p })),
+        earlier: prev.map((m, i) => {
+          const open = s.expanded === m.id;
+          return {
+            ...m,
+            ini: initials(m.from),
+            isOpen: open,
+            expanded: open ? "true" : "false",
+            z: i + 1,
+            inset: open ? 0 : (prev.length - i) * 12,
+            gap: open ? 10 : -12,
+            padB: open ? 16 : 22,
+            snipOp: open ? 0 : 1,
+            body: m.body.map((p) => ({ text: p })),
+            toggle: () => this.setState({ expanded: s.expanded === m.id ? null : m.id })
+          };
+        })
+      };
+    }
+    const toastT = s.toast ? THREADS.find((t) => t.id === s.toast) : null;
+    return {
+      frames: Object.keys(FRAMES).map((k) => ({ bg: FRAMES[k], op: k === s.space ? 1 : 0 })),
+      spaces: SPACES.map((x) => ({ ...x, isAll: x.key === "all", letter: x.key !== "all", pressed: x.key === s.space ? "true" : "false", cls: x.key === s.space ? "sp on" : "sp", pick: () => this.setSpace(x.key) })),
+      spaceName: space.label,
+      spaceColor: space.color,
+      spaceShort: space.short,
+      spaceIsAll: space.key === "all",
+      spaceIsAcct: space.key !== "all",
+      groups,
+      empty: vis.length === 0,
+      unread: vis.filter((t) => t.unread).length,
+      hl: s.hl,
+      hasReader: !!cur,
+      r,
+      readerAnim: s.flip ? "rin1" : "rin2",
+      listMax: cur ? "440px" : "1060px",
+      close: () => this.setState({ open: false }),
+      archiveCur: () => { if (cur) this.archive(cur.id); },
+      hasToast: !!toastT,
+      toastSubject: toastT ? toastT.subject : "",
+      undo: () => this.undo()
+    };
+  }
+}
+</script>
+</body>
+</html>

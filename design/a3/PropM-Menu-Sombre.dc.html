@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>A3 Matière — Menu contextuel, sombre</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&amp;display=swap">
+<style>
+body{margin:0}
+.app{--text:#EDEDEF;--text2:#A1A1AA;--acc:#2F6FEB;--accText:#82A9F3;--ring:#5B8FF5;--danger:#F28B80;--line:rgba(255,255,255,.09);color-scheme:dark}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;cursor:default}
+input{font:inherit;color:inherit;margin:0}
+input::placeholder{color:#8E8E97}
+.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ell{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.slab{background:linear-gradient(180deg,rgba(22,22,26,.95),rgba(15,15,18,.95));-webkit-backdrop-filter:blur(30px) saturate(1.3);backdrop-filter:blur(30px) saturate(1.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -2px 0 rgba(0,0,0,.3),0 0 0 1px rgba(0,0,0,.6),0 2px 0 rgba(0,0,0,.4),0 18px 40px -14px rgba(0,0,0,.7)}
+.lift{background:linear-gradient(180deg,#232428,#1A1B1E);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px rgba(0,0,0,.65),0 2px 0 rgba(0,0,0,.5),0 10px 22px -12px rgba(0,0,0,.8)}
+.pop{background:linear-gradient(180deg,rgba(35,36,40,.97),rgba(26,27,30,.96));-webkit-backdrop-filter:blur(30px) saturate(1.3);backdrop-filter:blur(30px) saturate(1.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px rgba(0,0,0,.7),0 2px 0 rgba(0,0,0,.5),0 24px 48px -16px rgba(0,0,0,.85)}
+.well{background:rgba(0,0,0,.3);box-shadow:inset 0 1px 2px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.04)}
+.r{position:relative;display:flex;align-items:flex-start;gap:12px;padding:11px 12px 12px 10px;border-radius:13px}
+.ck{display:flex;align-items:center;justify-content:center;width:20px;height:20px;margin-top:1px;border-radius:50%;flex:none;color:transparent;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)}
+.ck.u{box-shadow:inset 0 0 0 2px var(--ring)}
+.main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
+/* quick action tiles: the four everyday actions, one click away */
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:58px;border-radius:9px;font-size:11.5px;font-weight:500;transition:background .14s,box-shadow .14s,transform .14s}
+.tile .k{position:absolute;top:4px;right:6px;font-size:10.5px;font-weight:500;color:var(--text2)}
+.tile:hover{background:linear-gradient(180deg,#2C2D32,#222327);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px rgba(0,0,0,.6),0 1px 0 rgba(0,0,0,.5),0 4px 10px -5px rgba(0,0,0,.6);transform:translateY(-1px)}
+.tile:active{transform:translateY(1px)}
+/* list items: the highlight is a raised plate, like the selected row */
+.mi{display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 6px 0 10px;box-sizing:border-box;border-radius:9px;font-size:13px;text-align:left;white-space:nowrap;transition:background .12s,box-shadow .12s}
+.mi .g{width:15px;height:15px;color:var(--text2)}
+.mi:hover,.mi.hot{background:linear-gradient(180deg,#2C2D32,#222327);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px rgba(0,0,0,.6),0 1px 0 rgba(0,0,0,.5),0 4px 10px -5px rgba(0,0,0,.6)}
+.menu:hover .mi.hot:not(:hover){background:none;box-shadow:none}
+.mi.open{background:rgba(255,255,255,.05);box-shadow:none}
+.mi.danger{color:var(--danger)}
+.mi.danger .g{color:var(--danger)}
+.mi[aria-disabled="true"]{color:var(--text2)}
+.keys{display:inline-flex;gap:3px;margin-left:auto}
+.kb{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:5px;font-size:11px;font-weight:500;color:var(--text2);background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line)}
+.ms{height:1px;margin:5px 8px;background:var(--line)}
+.cap{padding:8px 10px 4px;font-size:11.5px;font-weight:600;color:var(--text2)}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(-4px)}to{opacity:1;transform:none}}
+@keyframes side{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</helmet>
+<div class="app" style="position: relative; width: 700px; height: 560px; overflow: hidden; background: #050506; color: var(--text); font-family: Inter, 'Segoe UI Variable Text', system-ui, -apple-system, sans-serif; font-optical-sizing: auto; font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased">
+
+<span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(155deg, #0C1120 0%, #070709 50%, #0F0C18 100%)"></span>
+<svg aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.07; mix-blend-mode: overlay; pointer-events: none"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="100%" height="100%" filter="url(#grain)"></rect></svg>
+
+<section class="slab" aria-label="Conversations" style="position: absolute; left: 10px; top: 10px; width: 404px; height: 540px; display: flex; flex-direction: column; overflow: hidden; border-radius: 18px">
+<header style="display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 14px 0 22px; flex: none">
+<h1 style="margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.01em">Réception</h1>
+<span style="font-size: 12.5px; color: var(--text2)">4 non lus</span>
+</header>
+<div style="flex: 1 1 auto; overflow: hidden; padding: 0 14px 16px 10px; display: flex; flex-direction: column; gap: 3px">
+<div style="padding: 12px 12px 6px; font-size: 12px; font-weight: 600; color: var(--text2)">Aujourd’hui</div>
+<sc-for list="{{rows}}" as="t" hint-placeholder-count="4">
+<div class="{{t.cls}}">
+<span class="{{t.ckCls}}" aria-hidden="true"></span>
+<span class="main">
+<span style="display: flex; align-items: center; gap: 8px; width: 100%">
+<span class="ell" style="flex: 1 1 auto; font-weight: {{t.weight}}">{{t.from}}</span>
+<span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 2px; background: {{t.dotColor}}; flex: none"></span>
+<span style="flex: none; font-size: 12px; color: var(--text2)">{{t.time}}</span>
+</span>
+<span class="ell" style="font-weight: {{t.sweight}}">{{t.subject}}</span>
+<span class="ell" style="font-size: 12.5px; color: var(--text2)">{{t.preview}}</span>
+</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div role="menu" aria-label="Actions sur « Atelier produit jeudi — ordre du jour »" class="pop menu" style="position: absolute; left: 152px; top: 112px; z-index: 3; width: 288px; padding: 6px; box-sizing: border-box; border-radius: 14px; transform-origin: 0 0; animation: pop .22s cubic-bezier(.2,.8,.2,1) both">
+<div role="group" aria-label="Actions rapides" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 11px" class="well">
+<button class="tile" role="menuitem"><span class="k" aria-hidden="true">E</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px"><path d="m5 12 5 5L20 7"></path></svg>Archiver</button>
+<button class="tile" role="menuitem"><span class="k" aria-hidden="true">H</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2"></path></svg>Reporter</button>
+<button class="tile" role="menuitem"><span class="k" aria-hidden="true">R</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px"><path d="M9 14 4 9l5-5M4 9h11a5 5 0 0 1 5 5v6"></path></svg>Répondre</button>
+<button class="tile" role="menuitem"><span class="k" aria-hidden="true">U</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px"><path d="M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM3 7l9 6 9-6"></path></svg>Non lu</button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 1px; padding-top: 6px">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<sc-if value="{{g.sep}}" hint-placeholder-val="{{false}}"><div class="ms" role="separator"></div></sc-if>
+<sc-for list="{{g.items}}" as="m" hint-placeholder-count="3">
+<button class="{{m.cls}}" role="menuitem" aria-haspopup="{{m.popup}}" aria-expanded="{{m.expanded}}" onClick="{{m.click}}">
+<svg class="i g" viewBox="0 0 24 24" aria-hidden="true" style="color: {{m.iconColor}}"><path d="{{m.icon}}"></path></svg>
+<span class="ell">{{m.label}}</span>
+<span class="keys"><sc-for list="{{m.keys}}" as="k" hint-placeholder-count="1"><span class="kb">{{k.k}}</span></sc-for></span>
+<sc-if value="{{m.sub}}" hint-placeholder-val="{{false}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; color: var(--text2)"><path d="m9 6 6 6-6 6"></path></svg></sc-if>
+</button>
+</sc-for>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{subOpen}}" hint-placeholder-val="{{true}}">
+<div role="menu" aria-label="Déplacer vers" class="pop menu" style="position: absolute; left: 444px; top: {{subTop}}px; z-index: 4; width: 230px; padding: 6px; box-sizing: border-box; border-radius: 14px; animation: side .2s cubic-bezier(.2,.8,.2,1) both">
+<div class="well" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 9px; color: var(--text2); font-size: 12.5px">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>Dossier ou libellé…
+</div>
+<div class="cap">Récents</div>
+<button class="mi hot" role="menuitem"><svg class="i g" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="ell">Projets</span><span class="keys"><span class="kb">1</span></span></button>
+<button class="mi" role="menuitem"><svg class="i g" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="ell">Factures</span><span class="keys"><span class="kb">2</span></span></button>
+<div class="cap" style="display: flex; align-items: center; gap: 7px"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 2px; background: #0F766E"></span>Travail</div>
+<button class="mi" role="menuitem" aria-disabled="true" title="Dossier actuel"><svg class="i g" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l1.5 2.5h5L16 13h5M5.5 5h13L21 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5z"></path></svg><span class="ell">Réception</span><span class="keys" style="font-size: 11.5px">actuel</span></button>
+<button class="mi" role="menuitem"><svg class="i g" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="ell">Clients</span></button>
+<button class="mi" role="menuitem"><svg class="i g" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v4H3zM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"></path></svg><span class="ell">Archive</span></button>
+<div class="ms" role="separator"></div>
+<button class="mi" role="menuitem"><svg class="i g" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span class="ell">Nouveau dossier…</span></button>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":700,"height":560}}'>
+const ROWS = [
+  { acct: "T", ctx: true, from: "Camille Roux", time: "10:42", subject: "Atelier produit jeudi — ordre du jour", preview: "Voici l’ordre du jour proposé pour jeudi : revue des retours bêta…" },
+  { acct: "P", unread: true, from: "Julien Faure", time: "09:31", subject: "Week-end à Annecy", preview: "Je réserve le gîte si vous confirmez avant vendredi." },
+  { acct: "T", unread: true, from: "Lucas Petit", time: "09:12", subject: "Disponibilités pour un call ?", preview: "Est-ce que tu aurais 30 min cette semaine ?" },
+  { acct: "G", unread: true, from: "GitHub", time: "08:05", subject: "[mailapp] CI en échec sur main", preview: "cargo check --target aarch64-apple-ios a échoué." },
+  { acct: "P", from: "Atelier Brun", time: "Hier", subject: "Votre devis n° 2026-118", preview: "Vous trouverez ci-joint le devis pour la cuisine." }
+];
+const COLOR = { P: "#B45309", T: "#0F766E", G: "#6D28D9" };
+const ICON = {
+  win: "M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM3 9h18",
+  all: "M7 14 2 9l5-5M12 14 7 9l5-5M7 9h8a5 5 0 0 1 5 5v6",
+  fwd: "m15 14 5-5-5-5M20 9H9a5 5 0 0 0-5 5v6",
+  move: "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
+  tag: "M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01",
+  spark: "M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z",
+  trash: "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"
+};
+const GROUPS = [
+  [
+    { id: "win", label: "Ouvrir dans une nouvelle fenêtre", icon: ICON.win, keys: ["⌘", "O"], hot: true },
+    { id: "all", label: "Répondre à tous", icon: ICON.all, keys: ["⇧", "R"] },
+    { id: "fwd", label: "Transférer", icon: ICON.fwd, keys: ["F"] }
+  ],
+  [
+    { id: "move", label: "Déplacer vers…", icon: ICON.move, keys: ["V"], sub: true },
+    { id: "tag", label: "Libellés…", icon: ICON.tag, keys: ["L"], sub: true }
+  ],
+  [
+    { id: "sum", label: "Résumer avec Claude", icon: ICON.spark, agent: true },
+    { id: "draft", label: "Préparer une réponse avec Claude", icon: ICON.spark, keys: ["⌘", "J"], agent: true }
+  ],
+  [
+    { id: "trash", label: "Mettre à la corbeille", icon: ICON.trash, keys: ["#"], danger: true }
+  ]
+];
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sub: true };
+  }
+  renderVals() {
+    const s = this.state;
+    const groups = GROUPS
+      .map((g, gi) => ({
+        sep: gi > 0,
+        items: g.map((m) => ({
+          ...m,
+          cls: "mi" + (m.id === "move" && s.sub ? " open" : (m.hot ? " hot" : "")) + (m.danger ? " danger" : ""),
+          iconColor: m.agent ? "var(--accText)" : (m.danger ? "var(--danger)" : "var(--text2)"),
+          keys: (m.keys || []).map((k) => ({ k })),
+          popup: m.sub ? "menu" : undefined,
+          expanded: m.sub ? (m.id === "move" && s.sub ? "true" : "false") : undefined,
+          click: m.id === "move" ? () => this.setState({ sub: !this.state.sub }) : undefined
+        }))
+      }));
+    return {
+      rows: ROWS.map((t) => ({
+        ...t,
+        cls: t.ctx ? "r lift" : "r",
+        dotColor: COLOR[t.acct],
+        ckCls: t.unread ? "ck u" : "ck",
+        weight: t.unread || t.ctx ? 650 : 550,
+        sweight: t.unread ? 550 : 400
+      })),
+      groups,
+      subOpen: s.sub,
+      // the submenu lines up with the « Déplacer vers… » row
+      subTop: 248
+    };
+  }
+}
+</script>
+</body>
+</html>

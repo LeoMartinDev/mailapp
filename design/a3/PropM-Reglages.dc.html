@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>A3 Matière — Réglages</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&amp;display=swap">
+<style>
+body{margin:0}
+.app{--text:#18181B;--text2:#5F5F68;--acc:#2F6FEB;--accText:#2962CF;--line:rgba(16,24,40,.08)}
+.app.a-indigo{--acc:#4F46E5;--accText:#4338CA}
+.app.a-teal{--acc:#0D9488;--accText:#0F766E}
+.app.a-violet{--acc:#7C3AED;--accText:#6D28D9}
+.app.a-rose{--acc:#DB2777;--accText:#BE185D}
+.app.a-graphite{--acc:#52525B;--accText:#3F3F46}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;cursor:default}
+input{font:inherit;color:inherit;margin:0}
+a{color:var(--accText)}
+.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ell{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* three levels only: flat frame, raised panels, max relief for the selection and the primary button */
+.slab{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(247,248,251,.9));-webkit-backdrop-filter:blur(30px) saturate(1.4);backdrop-filter:blur(30px) saturate(1.4);box-shadow:inset 0 1px 0 #FFFFFF,inset 0 -2px 0 rgba(16,24,40,.035),0 0 0 1px rgba(16,24,40,.07),0 2px 0 rgba(16,24,40,.045),0 18px 40px -14px rgba(16,24,40,.22)}
+.lift{background:linear-gradient(180deg,#FFFFFF,#F6F7FA);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 2px 0 rgba(16,24,40,.07),0 10px 22px -12px rgba(16,24,40,.34)}
+.chip{background:linear-gradient(180deg,#FFFFFF,#F5F6F9);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 1px 0 rgba(16,24,40,.08),0 4px 10px -5px rgba(16,24,40,.16)}
+.well{background:rgba(16,24,40,.045);box-shadow:inset 0 1px 2px rgba(16,24,40,.09),inset 0 0 0 1px rgba(16,24,40,.04)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 11px;border-radius:9px;font-size:12.5px;font-weight:500;flex:none;white-space:nowrap;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.ghost{box-shadow:inset 0 0 0 1px rgba(16,24,40,.11)}
+.ghost:hover{background:linear-gradient(180deg,#FFFFFF,#F5F6F9);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 1px 0 rgba(16,24,40,.08),0 4px 10px -5px rgba(16,24,40,.16);transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.pri{background:linear-gradient(180deg,#3170E6,#265DCB);color:#FFFFFF;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 1px #2459C4,0 2px 0 #1E4CA8,0 8px 16px -8px rgba(47,111,235,.7)}
+.pri:hover{transform:translateY(-1px)}
+.pri:active{transform:translateY(1px);box-shadow:inset 0 1px 2px rgba(0,0,0,.2),0 0 0 1px #2459C4}
+.danger{color:#B42318;font-weight:550;padding:0 10px}
+.danger:hover{background:rgba(180,35,24,.07)}
+.ib{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;color:var(--text2);flex:none;transition:background .15s,color .15s}
+.ib:hover{background:rgba(16,24,40,.06);color:var(--text)}
+.nav{display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 10px;border-radius:10px;box-sizing:border-box;text-align:left;white-space:nowrap;color:var(--text2);transition:background .18s,color .18s}
+.nav:not([aria-current]):hover{background:rgba(255,255,255,.42);color:var(--text)}
+.nav[aria-current]{background:rgba(255,255,255,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6);color:var(--text);font-weight:550}
+.n{margin-left:auto;font-size:12px;font-variant-numeric:tabular-nums}
+.search{background:rgba(255,255,255,.38);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5);transition:background .18s,box-shadow .18s}
+.search:hover{background:rgba(255,255,255,.66)}
+.search:focus-within{background:rgba(255,255,255,.78);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 0 0 2px var(--acc)}
+.fw:focus-within{box-shadow:inset 0 1px 2px rgba(16,24,40,.09),0 0 0 2px var(--acc)}
+.bare{flex:1 1 auto;min-width:0;border:0;outline:0;padding:0;background:transparent;font-size:13px;color:var(--text)}
+.bare::placeholder{color:var(--text2);opacity:1}
+.av{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:600;color:var(--text2);flex:none}
+/* settings layout */
+.sec{max-width:720px;margin:0 auto;box-sizing:border-box;padding:34px 40px 56px;display:flex;flex-direction:column;gap:30px}
+.hd{display:flex;flex-direction:column;gap:6px;padding:0 4px}
+.h1{margin:0;font-size:26px;font-weight:650;line-height:1.15;letter-spacing:-0.024em}
+.sub{margin:0;font-size:13.5px;line-height:1.5;color:var(--text2)}
+.blk{display:flex;flex-direction:column;gap:10px}
+.h2{margin:0;padding:0 4px;font-size:15px;font-weight:650;letter-spacing:-0.01em}
+.h3{margin:0;padding:0 4px;font-size:12.5px;font-weight:600;color:var(--text2)}
+.bd{margin:-4px 0 2px;padding:0 4px;font-size:12.5px;line-height:1.5;color:var(--text2)}
+.grp{display:flex;flex-direction:column;overflow:hidden;border-radius:14px;background:rgba(255,255,255,.72);box-shadow:inset 0 0 0 1px rgba(16,24,40,.07)}
+/* the separator sits above each row; the group clips the first one */
+.row{display:flex;align-items:center;gap:16px;min-height:56px;padding:11px 16px;box-sizing:border-box;box-shadow:0 -1px 0 rgba(16,24,40,.07);transition:min-height .3s cubic-bezier(.2,.8,.2,1),padding .3s cubic-bezier(.2,.8,.2,1)}
+.app.dense .row{min-height:46px;padding-top:7px;padding-bottom:7px}
+.app.dense .nav{height:29px}
+.rt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rl{font-size:13.5px;font-weight:550}
+.rd{font-size:12.5px;line-height:1.45;color:var(--text2)}
+.tag{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:7px;font-size:11.5px;font-weight:550;color:var(--text2);box-shadow:inset 0 0 0 1px rgba(16,24,40,.11);flex:none;white-space:nowrap}
+.tag.on{color:var(--accText);box-shadow:inset 0 0 0 1px rgba(47,111,235,.32)}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text2);flex:none;white-space:nowrap}
+.st.warn{color:#B45309;font-weight:550}
+.pill{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:8px;font-size:12.5px;font-weight:550;font-variant-numeric:tabular-nums;flex:none}
+.lnk{align-self:flex-start;font-size:12.5px;font-weight:550;color:var(--accText);border-radius:4px}
+.lnk:hover{text-decoration:underline}
+.note{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:14px}
+.tile{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;color:#FFFFFF;font-size:11.5px;font-weight:700;flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 1px 2px rgba(16,24,40,.2);transition:background .4s ease}
+.tile.hollow{color:var(--text2);box-shadow:inset 0 0 0 1px rgba(16,24,40,.16)}
+.ptile{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;color:var(--text2);flex:none}
+.acc{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px 10px 10px;border-radius:13px;box-sizing:border-box;text-align:left;transition:background .2s ease,box-shadow .2s ease,transform .2s cubic-bezier(.2,.8,.2,1)}
+.acc:not(.on):hover{background:rgba(16,24,40,.035)}
+.acc.on{background:linear-gradient(180deg,#FFFFFF,#F6F7FA);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 2px 0 rgba(16,24,40,.07),0 10px 22px -12px rgba(16,24,40,.34)}
+.acc:active{transform:scale(.995)}
+.main2{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
+.fld{width:210px;height:32px;padding:0 11px;border:0;border-radius:9px;box-sizing:border-box;font-size:13px;flex:none}
+/* switch: real checkbox, the knob is a sibling so it can carry relief */
+.tg{position:relative;display:inline-flex;flex:none;width:36px;height:22px}
+.sw{appearance:none;-webkit-appearance:none;margin:0;width:36px;height:22px;border-radius:11px;background:rgba(16,24,40,.13);box-shadow:inset 0 1px 2px rgba(16,24,40,.16),inset 0 0 0 1px rgba(16,24,40,.05);transition:background .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s ease}
+.sw:hover{background:rgba(16,24,40,.18)}
+.sw:checked{background:var(--acc);box-shadow:inset 0 1px 2px rgba(0,0,0,.2),inset 0 0 0 1px rgba(0,0,0,.06)}
+.kn{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;pointer-events:none;background:linear-gradient(180deg,#FFFFFF,#F2F3F6);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 .5px rgba(16,24,40,.14),0 1px 1px rgba(16,24,40,.18),0 4px 8px -3px rgba(16,24,40,.32);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.sw:checked+.kn{transform:translateX(14px)}
+/* color swatches: real radios */
+.dot{appearance:none;-webkit-appearance:none;margin:0;width:22px;height:22px;border-radius:50%;flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(0,0,0,.1);transition:box-shadow .22s ease,transform .22s cubic-bezier(.2,.8,.2,1)}
+.dot:hover{transform:scale(1.1)}
+.dot:checked{box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2.5px #FFFFFF,0 0 0 4px currentColor,0 5px 10px -4px rgba(16,24,40,.45)}
+.dot:focus-visible{outline-offset:5px}
+/* segmented control */
+.seg{display:flex;padding:3px;border-radius:10px;flex:none}
+.so{height:26px;padding:0 11px;border-radius:7px;font-size:12.5px;color:var(--text2);white-space:nowrap;transition:background .2s ease,box-shadow .2s ease,color .2s ease}
+.so:not(.on):hover{color:var(--text)}
+.so.on{color:var(--text);font-weight:550}
+/* theme cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:10px;padding:8px 8px 11px;border-radius:15px;text-align:left;box-shadow:inset 0 0 0 1px rgba(16,24,40,.1);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s ease,background .22s ease}
+.card:not(.on):hover{background:rgba(255,255,255,.7);transform:translateY(-1px)}
+.card.on{background:linear-gradient(180deg,#FFFFFF,#F6F7FA);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 2px 0 rgba(16,24,40,.07),0 10px 22px -12px rgba(16,24,40,.34)}
+.card:active{transform:scale(.985)}
+.pv{position:relative;display:block;height:92px;border-radius:9px;overflow:hidden}
+.pv::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(16,24,40,.09);pointer-events:none}
+.pvl{position:absolute;inset:0}
+.pvb{position:absolute;left:10px;top:14px;width:22%;display:flex;flex-direction:column;gap:6px}
+.pvb span,.pvs span{display:block;height:5px;border-radius:3px}
+.pvs{position:absolute;left:34%;right:9px;top:9px;bottom:9px;display:flex;flex-direction:column;gap:7px;padding:12px;box-sizing:border-box;border-radius:7px;box-shadow:0 0 0 1px rgba(16,24,40,.06),0 6px 12px -8px rgba(16,24,40,.4)}
+.cl{display:flex;align-items:center;gap:8px;padding:0 4px;font-weight:550}
+.rad{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1.5px rgba(16,24,40,.26);transition:box-shadow .22s ease}
+.card.on .rad{box-shadow:inset 0 0 0 4.5px var(--acc)}
+/* shortcuts */
+.kb{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:9px;flex:none;transition:background .15s ease,transform .16s ease}
+.kb:hover{background:rgba(16,24,40,.05)}
+.kb:active{transform:translateY(1px)}
+.kc{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;box-sizing:border-box;border-radius:6px;font-size:11.5px;font-weight:600;color:var(--text);background:linear-gradient(180deg,#FFFFFF,#F5F6F9);box-shadow:inset 0 -1px 0 rgba(16,24,40,.06),0 0 0 1px rgba(16,24,40,.11),0 1px 0 rgba(16,24,40,.1)}
+.then{padding:0 2px;font-size:11.5px;color:var(--text2)}
+.rec{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:9px;font-size:12.5px;font-weight:550;color:var(--accText);background:rgba(16,24,40,.035);box-shadow:inset 0 1px 2px rgba(16,24,40,.08),inset 0 0 0 1.5px var(--acc);flex:none;white-space:nowrap;animation:pop .26s cubic-bezier(.2,.8,.2,1) both}
+.pd{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:pulse 1.2s ease-in-out infinite}
+.tm{flex:0 0 40px;padding-top:1px;font-size:12.5px;color:var(--text2);font-variant-numeric:tabular-nums}
+@keyframes rin1{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes rin2{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.bare:focus-visible{outline:0}
+.app.still *{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:900px){.app{height:auto!important}.cols{flex-wrap:wrap!important}.pane{flex:1 1 100%!important;max-width:none!important}.cards{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div class="{{appCls}}" style="position: relative; height: 100vh; min-height: 760px; overflow: hidden; background: #EEF0F5; color: var(--text); font-family: Inter, 'Segoe UI Variable Text', system-ui, -apple-system, sans-serif; font-optical-sizing: auto; font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased">
+
+<span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(155deg, #D6E2FB 0%, #EDF0F7 50%, #E3E0F5 100%)"></span>
+<svg aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: {{grainOp}}; mix-blend-mode: multiply; pointer-events: none; transition: opacity .45s ease"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="100%" height="100%" filter="url(#grain)"></rect></svg>
+
+<div class="cols" style="position: relative; display: flex; gap: 10px; height: 100%; box-sizing: border-box; padding: 10px">
+
+<nav class="pane" aria-label="Sections des réglages" style="flex: 0 0 216px; display: flex; flex-direction: column; gap: 16px; padding: 6px 4px 4px; overflow: auto">
+<div style="display: flex; align-items: center; height: 36px; padding: 0 6px">
+<span style="font-size: 15px; font-weight: 650; letter-spacing: -0.012em">Réglages</span>
+</div>
+<div class="search" style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px 0 11px; border-radius: 11px; color: var(--text2)">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<label class="sr" for="nav-q">Rechercher un réglage</label>
+<input id="nav-q" class="bare" type="text" placeholder="Rechercher" autocomplete="off" onChange="{{onQuery}}">
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{nav}}" as="x" hint-placeholder-count="7">
+<button class="nav" aria-current="{{x.current}}" onClick="{{x.go}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="color: {{x.iconColor}}"><path d="{{x.icon}}"></path></svg>{{x.label}}<sc-if value="{{x.alert}}" hint-placeholder-val="{{false}}"><span class="n" style="display: flex; align-items: center"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 50%; background: #B45309"></span><span class="sr">, 1 compte à reconnecter</span></span></sc-if></button>
+</sc-for>
+<sc-if value="{{noNav}}" hint-placeholder-val="{{false}}">
+<p role="status" style="margin: 0; padding: 6px 10px; font-size: 12.5px; color: var(--text2)">Aucun réglage ne correspond.</p>
+</sc-if>
+</div>
+<div style="flex-grow: 1"></div>
+<div style="display: flex; align-items: center; gap: 8px; padding: 0 10px 6px; font-size: 12px; color: var(--text2)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3"></path></svg>Enregistrés dans la base chiffrée</div>
+</nav>
+
+<main class="pane slab" style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 18px">
+<div ref="{{scrollRef}}" style="flex: 1 1 auto; overflow: auto">
+
+<sc-if value="{{is.general}}" hint-placeholder-val="{{false}}">
+<div class="sec" style="animation: {{anim}} .42s cubic-bezier(.2,.8,.2,1) both">
+<header class="hd"><h1 class="h1">Général</h1><p class="sub">Langue, démarrage et comportement des fenêtres.</p></header>
+
+<section class="blk" aria-labelledby="h-g1">
+<h2 class="h2" id="h-g1">Langue et démarrage</h2>
+<div class="grp">
+<div class="row">
+<div class="rt"><span class="rl" id="l-lang">Langue de l’interface</span><span class="rd">Menus, réglages et notifications.</span></div>
+<div role="group" aria-labelledby="l-lang" class="well seg"><sc-for list="{{lang}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+</div>
+<div class="row">
+<div class="rt"><span class="rl" id="l-start">Au démarrage</span><span class="rd">Ce qui s’affiche à l’ouverture de mailapp.</span></div>
+<div role="group" aria-labelledby="l-start" class="well seg"><sc-for list="{{start}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+</div>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-g2">
+<h2 class="h2" id="h-g2">Fenêtres et système</h2>
+<div class="grp">
+<div class="row">
+<div class="rt"><label class="rl" for="g-dbl">Double-clic&nbsp;: ouvrir dans une nouvelle fenêtre</label><span class="rd">Un simple clic affiche toujours la conversation dans le volet de lecture.</span></div>
+<span class="tg"><input id="g-dbl" type="checkbox" role="switch" class="sw" checked="{{tg.dbl.on}}" onChange="{{tg.dbl.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="g-badge">Badge de non-lus dans le Dock</label><span class="rd">Sous Windows, sur l’icône de la barre des tâches. Compte les non-lus de la Réception.</span></div>
+<span class="tg"><input id="g-badge" type="checkbox" role="switch" class="sw" checked="{{tg.badge.on}}" onChange="{{tg.badge.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="g-snd">Son à l’envoi</label><span class="rd">Un bref son confirme le départ du message.</span></div>
+<span class="tg"><input id="g-snd" type="checkbox" role="switch" class="sw" checked="{{tg.sendSound.on}}" onChange="{{tg.sendSound.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{is.comptes}}" hint-placeholder-val="{{true}}">
+<div class="sec" style="animation: {{anim}} .42s cubic-bezier(.2,.8,.2,1) both">
+<header class="hd"><h1 class="h1">Comptes</h1><p class="sub">Trois comptes sur cet appareil. Mots de passe et jetons restent dans le trousseau du système.</p></header>
+
+<section class="blk" aria-label="Vos comptes">
+<div style="display: flex; flex-direction: column; gap: 3px">
+<sc-for list="{{accounts}}" as="x" hint-placeholder-count="3">
+<button class="{{x.cls}}" aria-current="{{x.current}}" onClick="{{x.pick}}">
+<span class="tile" aria-hidden="true" style="background: {{x.color}}">{{x.letter}}</span>
+<span class="main2"><span class="ell" style="font-weight: 600">{{x.name}}</span><span class="ell" style="font-size: 12.5px; color: var(--text2)">{{x.addr}}</span></span>
+<span class="ell" style="flex: 0 1 130px; font-size: 12.5px; color: var(--text2)">{{x.provider}}</span>
+<span style="flex: 0 0 108px; display: flex; justify-content: flex-end">
+<sc-if value="{{x.ok}}" hint-placeholder-val="{{true}}"><span class="st"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; stroke-width: 2"><path d="m5 12 5 5L20 7"></path></svg>À jour</span></sc-if>
+<sc-if value="{{x.bad}}" hint-placeholder-val="{{false}}"><span class="st warn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"></path></svg>Reconnecter</span></sc-if>
+</span>
+</button>
+</sc-for>
+<button class="acc" style="color: var(--text2)"><span class="tile hollow" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 14px; height: 14px"><path d="M12 5v14M5 12h14"></path></svg></span>Ajouter un compte…</button>
+</div>
+</section>
+
+<div style="display: flex; flex-direction: column; gap: 22px; animation: {{acctAnim}} .36s cubic-bezier(.2,.8,.2,1) both">
+<div style="display: flex; align-items: center; gap: 12px; padding: 4px 4px 0">
+<span class="tile" aria-hidden="true" style="background: {{a.color}}">{{a.letter}}</span>
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<h2 class="h2" style="padding: 0">{{a.name}}</h2>
+<span class="ell" style="font-size: 12.5px; color: var(--text2)">{{a.addr}} · {{a.provider}} · {{a.auth}}</span>
+</div>
+</div>
+
+<sc-if value="{{a.bad}}" hint-placeholder-val="{{false}}">
+<div class="well note" role="status" style="align-items: center">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; color: #B45309"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"></path></svg>
+<div class="rt"><span style="font-weight: 600; color: #B45309">Gmail a refusé le mot de passe d’application</span><span class="rd">La synchronisation est en pause. Les messages déjà synchronisés restent consultables.</span></div>
+<button class="btn pri">Reconnecter…</button>
+</div>
+</sc-if>
+
+<div class="grp">
+<div class="row">
+<div class="rt"><label class="rl" for="a-name">Nom dans la barre latérale</label><span class="rd">Affiché dans la boîte unifiée et sur les notifications.</span></div>
+<input id="a-name" class="well fld" type="text" autocomplete="off" value="{{a.rawName}}" onChange="{{a.rename}}">
+</div>
+<div class="row">
+<div class="rt"><span class="rl" id="l-acolor">Couleur</span><span class="rd">{{a.colorName}} · pastille et teinte de la fenêtre.</span></div>
+<div role="radiogroup" aria-labelledby="l-acolor" style="display: flex; flex-wrap: wrap; gap: 9px; padding: 4px; flex: none">
+<sc-for list="{{a.colors}}" as="c" hint-placeholder-count="7"><input type="radio" name="acolor" class="dot" aria-label="{{c.name}}" checked="{{c.on}}" onChange="{{c.pick}}" style="background: {{c.hex}}; color: {{c.hex}}"></sc-for>
+</div>
+</div>
+</div>
+
+<div class="blk">
+<h3 class="h3">Identités et alias</h3>
+<div class="grp">
+<sc-for list="{{a.ids}}" as="d" hint-placeholder-count="2">
+<div class="row" style="align-items: flex-start">
+<span class="av well" aria-hidden="true" style="width: 30px; height: 30px; margin-top: 1px; font-size: 10px">{{d.ini}}</span>
+<div class="rt">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span class="rl ell">{{d.name}}</span><sc-if value="{{d.def}}" hint-placeholder-val="{{true}}"><span class="tag">Par défaut</span></sc-if></span>
+<span class="rd ell">{{d.addr}}</span>
+<span class="rd" style="display: flex; align-items: center; gap: 6px; margin-top: 2px"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16zM13.5 6.5l4 4"></path></svg>{{d.sig}}</span>
+</div>
+<button class="btn ghost" aria-label="Modifier l’identité {{d.addr}}">Modifier</button>
+</div>
+</sc-for>
+<div class="row" style="min-height: 52px">
+<button class="btn ghost"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M12 5v14M5 12h14"></path></svg>Ajouter un alias…</button>
+</div>
+</div>
+</div>
+
+<div class="blk">
+<h3 class="h3">Synchronisation</h3>
+<div class="grp">
+<div class="row">
+<div class="rt"><span class="rl" id="l-hist">Historique synchronisé</span><span class="rd">Les messages plus anciens restent trouvables par la recherche sur le serveur.</span></div>
+<div role="group" aria-labelledby="l-hist" class="well seg"><sc-for list="{{a.hist}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+</div>
+<div class="row">
+<div class="rt"><span class="rl" id="l-att">Pièces jointes</span><span class="rd">Téléchargées à l’ouverture, puis chiffrées sur le disque.</span></div>
+<div role="group" aria-labelledby="l-att" class="well seg"><sc-for list="{{a.att}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+</div>
+</div>
+</div>
+
+<div class="blk">
+<h3 class="h3">Boîte unifiée et agents</h3>
+<div class="grp">
+<div class="row">
+<div class="rt"><label class="rl" for="a-unified">Inclure dans la boîte unifiée</label><span class="rd">Les conversations de ce compte apparaissent dans «&nbsp;Tous les comptes&nbsp;».</span></div>
+<span class="tg"><input id="a-unified" type="checkbox" role="switch" class="sw" checked="{{a.unified}}" onChange="{{a.toggleUnified}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="a-mcp">Accès MCP</label><span class="rd">{{a.mcpNote}}</span><button class="lnk" onClick="{{goAgents}}">Réglages Agents &amp; MCP</button></div>
+<span class="tg"><input id="a-mcp" type="checkbox" role="switch" class="sw" checked="{{a.mcp}}" onChange="{{a.toggleMcp}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; padding: 0 4px">
+<button class="btn danger" style="margin-left: -10px"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"></path></svg>Se déconnecter de ce compte…</button>
+<span class="rd">Efface ses données de cet appareil. Rien n’est supprimé sur le serveur.</span>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{is.apparence}}" hint-placeholder-val="{{false}}">
+<div class="sec" style="animation: {{anim}} .42s cubic-bezier(.2,.8,.2,1) both">
+<header class="hd"><h1 class="h1">Apparence</h1><p class="sub">Thème, couleur d’accent et densité de l’interface.</p></header>
+
+<section class="blk" aria-labelledby="h-a1">
+<h2 class="h2" id="h-a1">Thème</h2>
+<div role="group" aria-labelledby="h-a1" class="cards">
+<sc-for list="{{themes}}" as="t" hint-placeholder-count="3">
+<button class="{{t.cls}}" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}">
+<span class="pv" aria-hidden="true">
+<sc-for list="{{t.layers}}" as="l" hint-placeholder-count="1">
+<span class="pvl" style="background: {{l.frame}}; clip-path: {{l.clip}}">
+<span class="pvb"><span style="width: 100%; background: {{l.bar}}"></span><span style="width: 70%; background: {{l.bar}}"></span><span style="width: 84%; background: {{l.bar}}"></span></span>
+<span class="pvs" style="background: {{l.slab}}"><span style="width: 58%; background: {{l.line}}"></span><span style="width: 90%; background: {{l.line}}"></span><span style="width: 74%; background: {{l.line}}"></span></span>
+</span>
+</sc-for>
+</span>
+<span class="cl"><span class="rad" aria-hidden="true"></span>{{t.label}}</span>
+</button>
+</sc-for>
+</div>
+<p class="rd" style="margin: 0; padding: 0 4px">{{themeNote}}</p>
+</section>
+
+<section class="blk" aria-labelledby="h-a2">
+<h2 class="h2" id="h-a2">Couleurs et matière</h2>
+<div class="grp">
+<div class="row">
+<div class="rt"><span class="rl" id="l-accent">Couleur d’accent</span><span class="rd">{{accentName}} · interrupteurs, liens et sélection.</span></div>
+<div role="radiogroup" aria-labelledby="l-accent" style="display: flex; flex-wrap: wrap; gap: 9px; padding: 4px; flex: none">
+<sc-for list="{{accents}}" as="c" hint-placeholder-count="6"><input type="radio" name="accent" class="dot" aria-label="{{c.name}}" checked="{{c.on}}" onChange="{{c.pick}}" style="background: {{c.hex}}; color: {{c.hex}}"></sc-for>
+</div>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="ap-tint">Teinte de la fenêtre selon le compte</label><span class="rd">Le fond prend la couleur du compte affiché.</span></div>
+<span class="tg"><input id="ap-tint" type="checkbox" role="switch" class="sw" checked="{{tg.tint.on}}" onChange="{{tg.tint.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="ap-grain">Grain</label><span class="rd">Une texture discrète sur le fond de la fenêtre.</span></div>
+<span class="tg"><input id="ap-grain" type="checkbox" role="switch" class="sw" checked="{{tg.grain.on}}" onChange="{{tg.grain.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-a3">
+<h2 class="h2" id="h-a3">Densité et mouvement</h2>
+<div class="grp">
+<div class="row">
+<div class="rt"><span class="rl" id="l-dens">Densité</span><span class="rd">Hauteur des lignes dans les listes et les réglages.</span></div>
+<div role="group" aria-labelledby="l-dens" class="well seg"><sc-for list="{{density}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="ap-reduce">Réduire les animations</label><span class="rd">Supprime les mouvements. Le réglage du système est aussi respecté.</span></div>
+<span class="tg"><input id="ap-reduce" type="checkbox" role="switch" class="sw" checked="{{tg.reduce.on}}" onChange="{{tg.reduce.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{is.raccourcis}}" hint-placeholder-val="{{false}}">
+<div class="sec" style="animation: {{anim}} .42s cubic-bezier(.2,.8,.2,1) both">
+<header class="hd"><h1 class="h1">Raccourcis</h1><p class="sub">Cliquez sur une touche pour la modifier. Sous Windows, ⌘ correspond à Ctrl.</p></header>
+
+<div class="well fw" style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 11px; color: var(--text2)">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<label class="sr" for="k-q">Rechercher un raccourci</label>
+<input id="k-q" class="bare" type="text" placeholder="Rechercher une commande" autocomplete="off" onChange="{{onKeyQuery}}">
+</div>
+
+<sc-for list="{{kgroups}}" as="g" hint-placeholder-count="3">
+<section class="blk" aria-label="{{g.g}}">
+<h2 class="h2">{{g.g}}</h2>
+<div class="grp">
+<sc-for list="{{g.items}}" as="k" hint-placeholder-count="5">
+<div class="row" style="min-height: 48px; padding-top: 8px; padding-bottom: 8px">
+<span class="rl ell" style="flex: 1 1 auto; font-weight: 500">{{k.label}}</span>
+<sc-if value="{{k.idle}}" hint-placeholder-val="{{true}}">
+<button class="kb" aria-label="{{k.aria}}" onClick="{{k.record}}"><sc-for list="{{k.keys}}" as="c" hint-placeholder-count="1"><sc-if value="{{c.then}}" hint-placeholder-val="{{false}}"><span class="then">puis</span></sc-if><span class="kc">{{c.k}}</span></sc-for></button>
+</sc-if>
+<sc-if value="{{k.rec}}" hint-placeholder-val="{{false}}">
+<span class="rec" role="status"><span class="pd" aria-hidden="true"></span>Appuyez sur une touche…</span>
+<button class="btn ghost" onClick="{{k.cancel}}">Annuler</button>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+
+<sc-if value="{{noKeys}}" hint-placeholder-val="{{false}}">
+<p role="status" style="margin: 0; padding: 24px 4px; text-align: center; color: var(--text2)">Aucune commande ne correspond à «&nbsp;{{kq}}&nbsp;».</p>
+</sc-if>
+
+<div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; padding: 0 4px">
+<button class="btn ghost" onClick="{{resetKeys}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M4 12a8 8 0 0 1 13.7-5.7L20 8.6M20 4v4.6h-4.6M20 12a8 8 0 0 1-13.7 5.7L4 15.4M4 20v-4.6h4.6"></path></svg>Rétablir les raccourcis par défaut</button>
+<sc-if value="{{resetDone}}" hint-placeholder-val="{{false}}"><span class="st" role="status" style="animation: pop .26s cubic-bezier(.2,.8,.2,1) both"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; stroke-width: 2; color: var(--accText)"><path d="m5 12 5 5L20 7"></path></svg>Raccourcis par défaut rétablis</span></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{is.notifications}}" hint-placeholder-val="{{false}}">
+<div class="sec" style="animation: {{anim}} .42s cubic-bezier(.2,.8,.2,1) both">
+<header class="hd"><h1 class="h1">Notifications</h1><p class="sub">Notifications natives du système, compte par compte.</p></header>
+
+<section class="blk" aria-labelledby="h-n1">
+<h2 class="h2" id="h-n1">Par compte</h2>
+<div class="grp">
+<sc-for list="{{notifs}}" as="x" hint-placeholder-count="3">
+<div class="row">
+<span class="tile" aria-hidden="true" style="width: 24px; height: 24px; border-radius: 7px; font-size: 11px; background: {{x.color}}">{{x.letter}}</span>
+<div class="rt"><label class="rl" for="{{x.id}}">{{x.name}}</label><span class="rd ell">{{x.note}}</span></div>
+<span class="tg"><input id="{{x.id}}" type="checkbox" role="switch" class="sw" checked="{{x.on}}" onChange="{{x.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-n2">
+<h2 class="h2" id="h-n2">Filtrage et contenu</h2>
+<div class="grp">
+<div class="row">
+<div class="rt"><label class="rl" for="n-imp">Seulement les conversations importantes</label><span class="rd">Ignore les newsletters, les notifications automatiques et les promotions.</span></div>
+<span class="tg"><input id="n-imp" type="checkbox" role="switch" class="sw" checked="{{tg.important.on}}" onChange="{{tg.important.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="n-snd">Son à l’arrivée d’un message</label><span class="rd">Utilise le son de notification du système.</span></div>
+<span class="tg"><input id="n-snd" type="checkbox" role="switch" class="sw" checked="{{tg.notifSound.on}}" onChange="{{tg.notifSound.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="n-prev">Aperçu du contenu</label><span class="rd">Affiche le début du message. Sinon, seuls l’expéditeur et l’objet apparaissent.</span></div>
+<span class="tg"><input id="n-prev" type="checkbox" role="switch" class="sw" checked="{{tg.preview.on}}" onChange="{{tg.preview.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{is.confidentialite}}" hint-placeholder-val="{{false}}">
+<div class="sec" style="animation: {{anim}} .42s cubic-bezier(.2,.8,.2,1) both">
+<header class="hd"><h1 class="h1">Confidentialité</h1><p class="sub">Contenu distant, pistage et stockage sur cet appareil.</p></header>
+
+<section class="blk" aria-labelledby="h-p1">
+<h2 class="h2" id="h-p1">Contenu distant</h2>
+<div class="grp">
+<div class="row">
+<div class="rt"><span class="rl" id="l-remote">Images et contenu distant</span><span class="rd">{{remoteNote}}</span></div>
+<div role="group" aria-labelledby="l-remote" class="well seg"><sc-for list="{{remote}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+</div>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-p2">
+<h2 class="h2" id="h-p2">Expéditeurs de confiance</h2>
+<p class="bd">Leurs images se chargent toujours. Ajoutez-en depuis un message avec «&nbsp;Toujours afficher pour cet expéditeur&nbsp;».</p>
+<div class="grp">
+<sc-for list="{{trusted}}" as="t" hint-placeholder-count="4">
+<div class="row" style="min-height: 52px; padding-top: 8px; padding-bottom: 8px">
+<span class="av well" aria-hidden="true" style="width: 28px; height: 28px; font-size: 10px">{{t.ini}}</span>
+<div class="rt"><span class="rl ell" style="font-weight: 500">{{t.name}}</span><span class="rd ell">{{t.addr}}</span></div>
+<button class="ib" aria-label="{{t.aria}}" onClick="{{t.remove}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+</div>
+</sc-for>
+<sc-if value="{{noTrusted}}" hint-placeholder-val="{{false}}">
+<div class="row"><span class="rd">Aucun expéditeur de confiance. Les images restent bloquées pour tous.</span></div>
+</sc-if>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-p3">
+<h2 class="h2" id="h-p3">Pistage</h2>
+<div class="grp">
+<div class="row">
+<div class="rt"><label class="rl" for="p-pix">Supprimer les pixels de suivi</label><span class="rd">Les images invisibles qui signalent l’ouverture d’un message sont retirées.</span></div>
+<span class="tg"><input id="p-pix" type="checkbox" role="switch" class="sw" checked="{{tg.pixels.on}}" onChange="{{tg.pixels.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<div class="row">
+<div class="rt"><label class="rl" for="p-unwrap">Dérouler les liens suivis</label><span class="rd">Les liens de redirection sont remplacés par leur vraie destination.</span></div>
+<span class="tg"><input id="p-unwrap" type="checkbox" role="switch" class="sw" checked="{{tg.unwrap.on}}" onChange="{{tg.unwrap.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<div class="row">
+<div class="rt"><span class="rl">JavaScript dans les messages</span><span class="rd">Jamais exécuté, quel que soit le réglage du contenu distant.</span></div>
+<span class="st"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3"></path></svg>Toujours bloqué</span>
+</div>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-p4">
+<h2 class="h2" id="h-p4">Stockage et réseau</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px">
+<div class="well note">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px; margin-top: 1px; color: var(--accText)"><path d="M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3"></path></svg>
+<div class="rt" style="gap: 4px"><span style="font-weight: 600">Stockage chiffré</span><span class="rd">Messages, pièces jointes et réglages sont chiffrés sur cet appareil (SQLCipher). La clé est conservée dans le trousseau macOS ou, sous Windows, dans le Gestionnaire d’identification.</span></div>
+</div>
+<div class="well note">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px; margin-top: 1px; color: var(--accText)"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4 9.5 6-.5 1-1.5 2.4-2.9 3.6M6.3 7.6C4.6 8.8 3.3 10.5 2.5 12c1 2 4.5 6 9.5 6 1.6 0 3-.4 4.3-1M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg>
+<div class="rt" style="gap: 4px"><span style="font-weight: 600">Aucune télémétrie</span><span class="rd">mailapp ne contacte que vos fournisseurs de messagerie, les fournisseurs d’agents configurés et, si vous l’autorisez, les images distantes.</span></div>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{is.agents}}" hint-placeholder-val="{{false}}">
+<div class="sec" style="animation: {{anim}} .42s cubic-bezier(.2,.8,.2,1) both">
+<header class="hd"><h1 class="h1">Agents &amp; MCP</h1><p class="sub">Fournisseurs d’IA, serveur MCP et garde-fous. Chaque action d’un agent est journalisée et annulable.</p></header>
+
+<section class="blk" aria-labelledby="h-m1">
+<h2 class="h2" id="h-m1">Fournisseurs</h2>
+<p class="bd">Pour résumer, rédiger et traduire. Les CLI reçoivent automatiquement le serveur MCP de mailapp.</p>
+<div class="grp">
+<sc-for list="{{providers}}" as="p" hint-placeholder-count="4">
+<div class="row">
+<span class="ptile well" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 15px; height: 15px"><path d="{{p.icon}}"></path></svg></span>
+<div class="rt"><span class="rl">{{p.name}}</span><span class="rd ell">{{p.status}}</span></div>
+<sc-if value="{{p.isDef}}" hint-placeholder-val="{{false}}"><span class="tag on"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; stroke-width: 2"><path d="m5 12 5 5L20 7"></path></svg>Par défaut</span></sc-if>
+<sc-if value="{{p.canDef}}" hint-placeholder-val="{{true}}"><button class="btn ghost" aria-label="Utiliser {{p.name}} par défaut" onClick="{{p.makeDef}}">Utiliser par défaut</button></sc-if>
+<sc-if value="{{p.hasAction}}" hint-placeholder-val="{{false}}"><button class="btn ghost">{{p.action}}</button></sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-m2">
+<h2 class="h2" id="h-m2">Serveur MCP</h2>
+<div class="grp">
+<div class="row">
+<div class="rt"><label class="rl" for="m-on">Exposer la messagerie aux agents externes</label><span class="rd">Désactivé par défaut. Seuls les comptes que vous choisissez sont visibles.</span></div>
+<span class="tg"><input id="m-on" type="checkbox" role="switch" class="sw" checked="{{mcpOn}}" onChange="{{toggleMcpServer}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+<sc-if value="{{mcpOn}}" hint-placeholder-val="{{true}}">
+<div class="row">
+<div class="rt"><span class="rl">Écoute en local uniquement</span><span class="rd">Inaccessible depuis le réseau. Les en-têtes Host et Origin sont vérifiés.</span></div>
+<span class="well pill">127.0.0.1</span>
+</div>
+<div class="row">
+<div class="rt"><span class="rl">Jeton d’accès requis</span><span class="rd">Exigé à chaque requête. Conservé dans le trousseau.</span></div>
+<button class="btn ghost">Régénérer…</button>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{mcpOff}}" hint-placeholder-val="{{false}}">
+<div class="well note" role="status" style="animation: pop .3s cubic-bezier(.2,.8,.2,1) both"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 16px; height: 16px; margin-top: 1px; color: var(--text2)"><path d="M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3"></path></svg><span class="rd">Le serveur est arrêté. Aucun agent externe n’a accès à vos messages.</span></div>
+</sc-if>
+</section>
+
+<sc-if value="{{mcpOn}}" hint-placeholder-val="{{true}}">
+<section class="blk" aria-labelledby="h-m3">
+<h3 class="h3" id="h-m3">Comptes exposés · {{exposedNote}}</h3>
+<div class="grp">
+<sc-for list="{{expose}}" as="x" hint-placeholder-count="3">
+<div class="row" style="min-height: 50px">
+<span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 2px; background: {{x.color}}; flex: none"></span>
+<div class="rt"><label class="rl" for="{{x.id}}">{{x.name}}</label><span class="rd ell">{{x.note}}</span></div>
+<span class="tg"><input id="{{x.id}}" type="checkbox" role="switch" class="sw" checked="{{x.on}}" onChange="{{x.toggle}}"><span class="kn" aria-hidden="true"></span></span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 0 0">
+<sc-for list="{{cfg}}" as="c" hint-placeholder-count="2">
+<button class="btn ghost" onClick="{{c.copy}}">
+<sc-if value="{{c.idle}}" hint-placeholder-val="{{true}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M9 9h10v10H9zM5 15V5h10"></path></svg></sc-if>
+<sc-if value="{{c.done}}" hint-placeholder-val="{{false}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; stroke-width: 2; color: var(--accText)"><path d="m5 12 5 5L20 7"></path></svg></sc-if>
+{{c.label}}
+</button>
+</sc-for>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-m4">
+<h2 class="h2" id="h-m4">Clients connectés</h2>
+<div class="grp">
+<sc-for list="{{clients}}" as="c" hint-placeholder-count="2">
+<div class="row">
+<span class="ptile well" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 15px; height: 15px"><path d="M4 5h16v14H4zM8 10l2.5 2L8 14M13 15h3"></path></svg></span>
+<div class="rt"><span class="rl">{{c.name}}</span><span class="rd ell">{{c.detail}}</span></div>
+<button class="btn ghost" aria-label="Déconnecter {{c.name}}" onClick="{{c.drop}}">Déconnecter</button>
+</div>
+</sc-for>
+<sc-if value="{{noClients}}" hint-placeholder-val="{{false}}">
+<div class="row"><span class="rd">Aucun client connecté. Copiez la configuration dans votre agent pour le relier à mailapp.</span></div>
+</sc-if>
+</div>
+</section>
+</sc-if>
+
+<section class="blk" aria-labelledby="h-m5">
+<h2 class="h2" id="h-m5">Garde-fous</h2>
+<p class="bd">Appliqués à chaque commande, quel que soit l’agent ou le point d’entrée. Ils ne se désactivent pas.</p>
+<div class="grp">
+<sc-for list="{{guards}}" as="g" hint-placeholder-count="3">
+<div class="row">
+<span class="ptile well" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 15px; height: 15px"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6zM9 12l2 2 4-4"></path></svg></span>
+<div class="rt"><span class="rl">{{g.t}}</span><span class="rd">{{g.d}}</span></div>
+<span class="st"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3"></path></svg>Toujours actif</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section class="blk" aria-labelledby="h-m6">
+<h2 class="h2" id="h-m6">Journal d’activité</h2>
+<p class="bd">Aujourd’hui</p>
+<div class="grp">
+<sc-for list="{{journal}}" as="j" hint-placeholder-count="4">
+<div class="row" style="align-items: flex-start">
+<span class="tm">{{j.time}}</span>
+<div class="rt" style="gap: 3px">
+<span><span style="font-weight: 600">{{j.who}}</span> {{j.text}}</span>
+<span class="rd" style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 2px; background: {{j.acctColor}}; flex: none"></span>{{j.acctName}}</span>
+<sc-if value="{{j.refused}}" hint-placeholder-val="{{false}}"><span class="st warn" style="white-space: normal; align-items: flex-start"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; margin-top: 1px"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM5.6 5.6l12.8 12.8"></path></svg>Refusé&nbsp;: pas de suppression définitive. Rien n’a été supprimé.</span></sc-if>
+</div>
+<sc-if value="{{j.canUndo}}" hint-placeholder-val="{{true}}"><button class="btn ghost" aria-label="Annuler : {{j.who}} {{j.text}}" onClick="{{j.undo}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3"></path></svg>Annuler</button></sc-if>
+<sc-if value="{{j.isUndone}}" hint-placeholder-val="{{false}}"><span class="st" role="status" style="height: 30px; animation: pop .26s cubic-bezier(.2,.8,.2,1) both"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; stroke-width: 2"><path d="m5 12 5 5L20 7"></path></svg>Annulé</span></sc-if>
+<sc-if value="{{j.canReview}}" hint-placeholder-val="{{false}}"><button class="btn ghost" aria-label="Relire le brouillon préparé par {{j.who}}">Relire</button></sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+</div>
+</sc-if>
+
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":860}}'>
+const SPARK = "M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z";
+const TERM = "M4 5h16v14H4zM8 10l2.5 2L8 14M13 15h3";
+const KEY = "M15 3a6 6 0 0 0-5.7 7.9L3 17v4h4v-2h2v-2h2l1.1-1.1A6 6 0 1 0 15 3zM16 8h.01";
+const SECTIONS = [
+  { key: "general", label: "Général", icon: "M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1M15 4v4M9 10v4M17 16v4", kw: "langue français english démarrage réception fenêtre double-clic badge dock barre des tâches son envoi" },
+  { key: "comptes", label: "Comptes", icon: "M12 12a4 4 0 1 0 0-8a4 4 0 1 0 0 8zM4.5 20a7.5 7.5 0 0 1 15 0", kw: "compte ajouter imap smtp microsoft 365 gmail identité alias signature synchronisation historique pièces jointes boîte unifiée couleur déconnecter reconnecter" },
+  { key: "apparence", label: "Apparence", icon: "M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 3v18M12 8h6.8M12 12h9M12 16h6.8", kw: "thème clair sombre système couleur accent teinte grain densité compacte animations" },
+  { key: "raccourcis", label: "Raccourcis", icon: "M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM7 10h.01M11 10h.01M15 10h.01M8 14h8", kw: "clavier touches raccourci commande palette" },
+  { key: "notifications", label: "Notifications", icon: "M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0", kw: "alerte son aperçu importantes" },
+  { key: "confidentialite", label: "Confidentialité", icon: "M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6zM9 12l2 2 4-4", kw: "vie privée images contenu distant pistage suivi pixels liens expéditeurs confiance chiffrement télémétrie sqlcipher trousseau javascript" },
+  { key: "agents", label: "Agents & MCP", icon: SPARK, kw: "ia claude code opencode anthropic openrouter api mcp serveur jeton clients garde-fous journal activité" }
+];
+const ACCOUNTS = [
+  { key: "P", name: "Perso", addr: "leo@perso.example", provider: "IMAP / SMTP", auth: "mot de passe dans le trousseau", color: "#B45309", ok: true,
+    ids: [{ name: "Léo Martin", addr: "leo@perso.example", sig: "Léo", def: true }] },
+  { key: "T", name: "Travail", addr: "leo.martin@studio.example", provider: "Microsoft 365", auth: "connexion OAuth2", color: "#0F766E", ok: true,
+    ids: [{ name: "Léo Martin", addr: "leo.martin@studio.example", sig: "Léo Martin — Studio, Paris", def: true }, { name: "Équipe produit", addr: "produit@studio.example", sig: "L’équipe produit du Studio" }] },
+  { key: "G", name: "Gmail", addr: "vous@gmail.com", provider: "Gmail (IMAP)", auth: "mot de passe d’application refusé", color: "#6D28D9", ok: false,
+    ids: [{ name: "Léo Martin", addr: "vous@gmail.com", sig: "", def: true }] }
+];
+const COLORS = [
+  { hex: "#B45309", name: "Ambre" }, { hex: "#0F766E", name: "Sarcelle" }, { hex: "#6D28D9", name: "Violet" }, { hex: "#2F6FEB", name: "Bleu" },
+  { hex: "#BE185D", name: "Framboise" }, { hex: "#15803D", name: "Vert" }, { hex: "#475569", name: "Ardoise" }
+];
+const ACCENTS = [
+  { key: "blue", name: "Bleu", hex: "#2F6FEB" }, { key: "indigo", name: "Indigo", hex: "#4F46E5" }, { key: "teal", name: "Sarcelle", hex: "#0D9488" },
+  { key: "violet", name: "Violet", hex: "#7C3AED" }, { key: "rose", name: "Framboise", hex: "#DB2777" }, { key: "graphite", name: "Graphite", hex: "#52525B" }
+];
+const LIGHT = { frame: "linear-gradient(155deg, #D6E2FB 0%, #EDF0F7 50%, #E3E0F5 100%)", slab: "#FFFFFF", bar: "rgba(16,24,40,.16)", line: "rgba(16,24,40,.12)", clip: "none" };
+const DARK = { frame: "linear-gradient(155deg, #232A3B 0%, #18191E 50%, #262236 100%)", slab: "#2A2B32", bar: "rgba(255,255,255,.2)", line: "rgba(255,255,255,.16)", clip: "none" };
+const THEMES = [
+  { key: "light", label: "Clair", note: "Toujours clair, de jour comme de nuit.", layers: [LIGHT] },
+  { key: "dark", label: "Sombre", note: "Toujours sombre, de jour comme de nuit.", layers: [DARK] },
+  { key: "system", label: "Système", note: "Suit le réglage clair ou sombre de macOS ou de Windows.", layers: [LIGHT, { ...DARK, clip: "inset(0 0 0 50%)" }] }
+];
+const SHORTCUTS = [
+  { g: "Navigation", items: [
+    { id: "next", label: "Conversation suivante", keys: ["J"] },
+    { id: "prev", label: "Conversation précédente", keys: ["K"] },
+    { id: "open", label: "Ouvrir la conversation", keys: ["↩"] },
+    { id: "inbox", label: "Aller à la Réception", keys: ["G", "I"], seq: true },
+    { id: "palette", label: "Palette de commandes", keys: ["⌘", "K"] },
+    { id: "find", label: "Rechercher", keys: ["/"] }
+  ] },
+  { g: "Actions", items: [
+    { id: "archive", label: "Archiver", keys: ["E"] },
+    { id: "snooze", label: "Reporter", keys: ["H"] },
+    { id: "reply", label: "Répondre", keys: ["R"] },
+    { id: "replyall", label: "Répondre à tous", keys: ["⇧", "R"] },
+    { id: "fwd", label: "Transférer", keys: ["F"] },
+    { id: "unread", label: "Marquer comme non lu", keys: ["U"] },
+    { id: "star", label: "Marquer d’une étoile", keys: ["S"] },
+    { id: "trash", label: "Mettre à la corbeille", keys: ["#"] }
+  ] },
+  { g: "Rédaction", items: [
+    { id: "new", label: "Nouveau message", keys: ["C"] },
+    { id: "send", label: "Envoyer", keys: ["⌘", "↩"] },
+    { id: "claude", label: "Rédiger avec Claude", keys: ["⌘", "J"] },
+    { id: "attach", label: "Joindre un fichier", keys: ["⌘", "⇧", "A"] },
+    { id: "discard", label: "Supprimer le brouillon", keys: ["⌘", "⌫"] }
+  ] }
+];
+const KEYNAMES = { "⌘": "Cmd", "⇧": "Maj", "↩": "Entrée", "⌫": "Retour arrière" };
+const PROVIDERS = [
+  { key: "claude", name: "Claude Code", icon: TERM, status: "CLI détectée dans le PATH · utilise votre abonnement Claude", ready: true },
+  { key: "opencode", name: "opencode", icon: TERM, status: "CLI détectée dans le PATH", ready: true },
+  { key: "anthropic", name: "Anthropic API", icon: KEY, status: "Clé enregistrée dans le trousseau", ready: true, action: "Modifier la clé…" },
+  { key: "openrouter", name: "OpenRouter", icon: KEY, status: "Non configuré", ready: false, action: "Configurer…" }
+];
+const CLIENTS = [
+  { id: "cc", name: "Claude Code", detail: "Dernière requête aujourd’hui à 10:48" },
+  { id: "oc", name: "opencode", detail: "Dernière requête aujourd’hui à 10:31" }
+];
+const GUARDS = [
+  { t: "Envoi uniquement après votre validation", d: "Les agents préparent des brouillons ; c’est vous qui envoyez." },
+  { t: "Pas de suppression définitive", d: "Un agent peut au plus déplacer un message dans la corbeille." },
+  { t: "Codes à usage unique masqués", d: "Codes et liens de connexion sont masqués avant qu’un modèle ne lise le message." }
+];
+const JOURNAL = [
+  { id: "j1", time: "10:48", who: "Claude Code", text: "a archivé 3 newsletters", acct: "P", kind: "undo" },
+  { id: "j2", time: "10:31", who: "opencode", text: "a préparé un brouillon de réponse à Julien Faure", acct: "P", kind: "review" },
+  { id: "j3", time: "09:57", who: "Claude Code", text: "a reporté « Photos du mariage » à demain 9 h", acct: "P", kind: "undo" },
+  { id: "j4", time: "09:40", who: "Claude Code", text: "a demandé la suppression définitive de 12 messages", acct: "P", kind: "refused" }
+];
+const TRUSTED = [
+  { id: "s1", name: "Mathilde Garnier", addr: "mathilde.garnier@perso.example" },
+  { id: "s2", name: "Atelier Brun", addr: "contact@atelier-brun.example" },
+  { id: "s3", name: "GitHub", addr: "notifications@github.com" },
+  { id: "s4", name: "Camille Roux", addr: "camille.roux@studio.example" }
+];
+const REMOTE_NOTES = {
+  block: "Bloqué par défaut. Affichez-le pour un message, ou toujours pour un expéditeur.",
+  ask: "Un bandeau propose de charger les images de chaque message.",
+  allow: "Les images se chargent seules : l’expéditeur peut savoir quand vous lisez."
+};
+const norm = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const initials = (name) => name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+const seg = (opts, cur, set) => opts.map(([v, label]) => ({ label, cls: v === cur ? "so chip on" : "so", pressed: v === cur ? "true" : "false", pick: () => set(v) }));
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const acc = {};
+    // MCP is off by default per account; Perso was opted in, so the agents section has something to show
+    ACCOUNTS.forEach((a) => { acc[a.key] = { name: a.name, color: a.color, hist: "12", att: "demand", unified: true, mcp: a.key === "P", notif: true }; });
+    this.state = {
+      sec: "comptes", flip: false, q: "", sel: "T", aflip: false, acc,
+      on: { dbl: false, badge: true, sendSound: true, tint: true, grain: true, reduce: false, important: false, notifSound: true, preview: true, pixels: true, unwrap: true },
+      lang: "fr", start: "inbox", theme: "light", accent: "blue", density: "comfy",
+      kq: "", rec: null, reset: false,
+      remote: "block", trusted: TRUSTED.map((t) => t.id),
+      defProv: "claude", mcpOn: true, clients: CLIENTS.map((c) => c.id), copied: null, undone: []
+    };
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+  go(k) {
+    if (k === this.state.sec) return;
+    this.setState({ sec: k, flip: !this.state.flip, rec: null, reset: false });
+    if (this.scroller) this.scroller.scrollTop = 0;
+  }
+  flipOn(k) { this.setState({ on: { ...this.state.on, [k]: !this.state.on[k] } }); }
+  setAcc(k, patch) { this.setState({ acc: { ...this.state.acc, [k]: { ...this.state.acc[k], ...patch } } }); }
+  copy(k) {
+    clearTimeout(this.t);
+    this.setState({ copied: k });
+    this.t = setTimeout(() => this.setState({ copied: null }), 2200);
+  }
+  renderVals() {
+    const s = this.state;
+    const tg = {};
+    Object.keys(s.on).forEach((k) => { tg[k] = { on: s.on[k], toggle: () => this.flipOn(k) }; });
+    const is = {};
+    SECTIONS.forEach((x) => { is[x.key] = x.key === s.sec; });
+    const q = norm(s.q.trim());
+    const nav = SECTIONS.filter((x) => !q || norm(x.label + " " + x.kw).indexOf(q) >= 0).map((x) => ({
+      ...x,
+      current: x.key === s.sec ? "page" : undefined,
+      iconColor: x.key === s.sec ? "var(--accText)" : "currentColor",
+      alert: x.key === "comptes",
+      go: () => this.go(x.key)
+    }));
+    const view = (a) => {
+      const st = s.acc[a.key];
+      const name = st.name.trim() || "Sans nom";
+      return { key: a.key, addr: a.addr, provider: a.provider, auth: a.auth, ok: a.ok, bad: !a.ok, name, letter: name[0].toUpperCase(), color: st.color };
+    };
+    const accounts = ACCOUNTS.map((a) => {
+      const on = a.key === s.sel;
+      return { ...view(a), cls: on ? "acc on" : "acc", current: on ? "true" : undefined, pick: () => { if (!on) this.setState({ sel: a.key, aflip: !s.aflip }); } };
+    });
+    const A = ACCOUNTS.find((x) => x.key === s.sel);
+    const st = s.acc[s.sel];
+    const set = (p) => this.setAcc(s.sel, p);
+    const a = {
+      ...view(A),
+      rawName: st.name,
+      rename: (e) => set({ name: e.target.value }),
+      colors: COLORS.map((c) => ({ ...c, on: c.hex === st.color, pick: () => set({ color: c.hex }) })),
+      colorName: (COLORS.find((c) => c.hex === st.color) || { name: "" }).name,
+      ids: A.ids.map((d) => ({ ...d, ini: initials(d.name), sig: d.sig ? "Signature : « " + d.sig + " »" : "Aucune signature" })),
+      hist: seg([["3", "3 mois"], ["12", "12 mois"], ["all", "Tout"]], st.hist, (v) => set({ hist: v })),
+      att: seg([["demand", "À la demande"], ["always", "Toujours"]], st.att, (v) => set({ att: v })),
+      unified: st.unified,
+      toggleUnified: () => set({ unified: !st.unified }),
+      mcp: st.mcp,
+      toggleMcp: () => set({ mcp: !st.mcp }),
+      mcpNote: st.mcp
+        ? (s.mcpOn ? "Les agents connectés peuvent lire ce compte et préparer des brouillons." : "Autorisé, mais le serveur MCP est arrêté.")
+        : "Désactivé par défaut. Les agents externes ne voient pas ce compte."
+    };
+    const theme = THEMES.find((t) => t.key === s.theme);
+    const kq = norm(s.kq.trim());
+    const kgroups = SHORTCUTS.map((g) => ({
+      g: g.g,
+      items: g.items.filter((it) => !kq || norm(it.label).indexOf(kq) >= 0).map((it) => {
+        const rec = s.rec === it.id;
+        return {
+          label: it.label, rec, idle: !rec,
+          keys: it.keys.map((k, i) => ({ k, then: !!it.seq && i > 0 })),
+          aria: "Modifier le raccourci « " + it.label + " », actuellement " + it.keys.map((k) => KEYNAMES[k] || k).join(it.seq ? " puis " : " + "),
+          record: () => this.setState({ rec: it.id, reset: false }),
+          cancel: () => this.setState({ rec: null })
+        };
+      })
+    })).filter((g) => g.items.length);
+    const trusted = TRUSTED.filter((t) => s.trusted.indexOf(t.id) >= 0).map((t) => ({
+      ...t, ini: initials(t.name), aria: "Retirer " + t.name + " des expéditeurs de confiance",
+      remove: () => this.setState({ trusted: s.trusted.filter((i) => i !== t.id) })
+    }));
+    const exposed = ACCOUNTS.filter((x) => s.acc[x.key].mcp).length;
+    const clients = CLIENTS.filter((c) => s.clients.indexOf(c.id) >= 0).map((c) => ({ ...c, drop: () => this.setState({ clients: s.clients.filter((i) => i !== c.id) }) }));
+    const color = {};
+    const names = {};
+    ACCOUNTS.forEach((x) => { const v = view(x); color[x.key] = v.color; names[x.key] = v.name; });
+    return {
+      appCls: ["app", "a-" + s.accent, s.density === "compact" ? "dense" : "", s.on.reduce ? "still" : ""].join(" "),
+      grainOp: s.on.grain ? 0.08 : 0,
+      nav,
+      noNav: nav.length === 0,
+      onQuery: (e) => this.setState({ q: e.target.value }),
+      is,
+      anim: s.flip ? "rin1" : "rin2",
+      acctAnim: s.aflip ? "rin1" : "rin2",
+      scrollRef: (el) => { this.scroller = el; },
+      tg,
+      lang: seg([["fr", "Français"], ["en", "English"]], s.lang, (v) => this.setState({ lang: v })),
+      start: seg([["inbox", "La Réception"], ["last", "La dernière vue"]], s.start, (v) => this.setState({ start: v })),
+      accounts,
+      a,
+      goAgents: () => this.go("agents"),
+      themes: THEMES.map((t) => ({ ...t, cls: t.key === s.theme ? "card on" : "card", pressed: t.key === s.theme ? "true" : "false", pick: () => this.setState({ theme: t.key }) })),
+      themeNote: theme.note,
+      accents: ACCENTS.map((c) => ({ ...c, on: c.key === s.accent, pick: () => this.setState({ accent: c.key }) })),
+      accentName: ACCENTS.find((c) => c.key === s.accent).name,
+      density: seg([["comfy", "Confortable"], ["compact", "Compacte"]], s.density, (v) => this.setState({ density: v })),
+      onKeyQuery: (e) => this.setState({ kq: e.target.value }),
+      kgroups,
+      noKeys: kgroups.length === 0,
+      kq: s.kq.trim(),
+      resetKeys: () => this.setState({ rec: null, reset: true }),
+      resetDone: s.reset,
+      notifs: ACCOUNTS.map((x) => ({
+        ...view(x), id: "n-" + x.key, on: s.acc[x.key].notif,
+        note: x.ok ? x.addr : "En pause jusqu’à la reconnexion du compte",
+        toggle: () => this.setAcc(x.key, { notif: !s.acc[x.key].notif })
+      })),
+      remote: seg([["block", "Bloquer"], ["ask", "Demander"], ["allow", "Autoriser"]], s.remote, (v) => this.setState({ remote: v })),
+      remoteNote: REMOTE_NOTES[s.remote],
+      trusted,
+      noTrusted: trusted.length === 0,
+      providers: PROVIDERS.map((p) => ({
+        ...p, isDef: p.key === s.defProv, canDef: p.ready && p.key !== s.defProv, hasAction: !!p.action,
+        makeDef: () => this.setState({ defProv: p.key })
+      })),
+      mcpOn: s.mcpOn,
+      mcpOff: !s.mcpOn,
+      toggleMcpServer: () => this.setState({ mcpOn: !s.mcpOn }),
+      exposedNote: exposed + (exposed > 1 ? " comptes sur 3" : " compte sur 3"),
+      expose: ACCOUNTS.map((x) => ({
+        ...view(x), id: "x-" + x.key, on: s.acc[x.key].mcp,
+        note: x.ok ? x.addr : x.addr + " · à reconnecter",
+        toggle: () => this.setAcc(x.key, { mcp: !s.acc[x.key].mcp })
+      })),
+      cfg: [["claude", "Claude Code"], ["opencode", "opencode"]].map(([k, n]) => ({
+        label: s.copied === k ? "Configuration copiée" : "Copier la configuration pour " + n,
+        done: s.copied === k, idle: s.copied !== k, copy: () => this.copy(k)
+      })),
+      clients,
+      noClients: clients.length === 0,
+      guards: GUARDS,
+      journal: JOURNAL.map((j) => {
+        const undone = s.undone.indexOf(j.id) >= 0;
+        return {
+          ...j, acctName: names[j.acct], acctColor: color[j.acct],
+          canUndo: j.kind === "undo" && !undone, isUndone: undone, canReview: j.kind === "review", refused: j.kind === "refused",
+          undo: () => this.setState({ undone: s.undone.concat([j.id]) })
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

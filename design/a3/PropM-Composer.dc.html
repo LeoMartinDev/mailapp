@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>A3 Matière — Rédaction</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&amp;display=swap">
+<style>
+body{margin:0}
+.app{--text:#18181B;--text2:#5F5F68;--acc:#2F6FEB;--accText:#2962CF;--line:rgba(16,24,40,.08)}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;cursor:default}
+input{font:inherit;color:inherit;margin:0}
+input::placeholder{color:var(--text2)}
+a{color:var(--accText)}
+.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ell{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* three levels only: flat frame, raised panels, max relief for the selection and Send */
+.slab{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(247,248,251,.9));-webkit-backdrop-filter:blur(30px) saturate(1.4);backdrop-filter:blur(30px) saturate(1.4);box-shadow:inset 0 1px 0 #FFFFFF,inset 0 -2px 0 rgba(16,24,40,.035),0 0 0 1px rgba(16,24,40,.07),0 2px 0 rgba(16,24,40,.045),0 18px 40px -14px rgba(16,24,40,.22)}
+.lift{background:linear-gradient(180deg,#FFFFFF,#F6F7FA);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 2px 0 rgba(16,24,40,.07),0 10px 22px -12px rgba(16,24,40,.34)}
+.chip{background:linear-gradient(180deg,#FFFFFF,#F5F6F9);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 1px 0 rgba(16,24,40,.08),0 4px 10px -5px rgba(16,24,40,.16)}
+.well{background:rgba(16,24,40,.045);box-shadow:inset 0 1px 2px rgba(16,24,40,.09),inset 0 0 0 1px rgba(16,24,40,.04)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 11px;border-radius:9px;font-size:12.5px;font-weight:500;flex:none;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.ghost{box-shadow:inset 0 0 0 1px rgba(16,24,40,.11)}
+.ghost:hover{background:linear-gradient(180deg,#FFFFFF,#F5F6F9);box-shadow:inset 0 1px 0 #FFFFFF,0 0 0 1px rgba(16,24,40,.08),0 1px 0 rgba(16,24,40,.08),0 4px 10px -5px rgba(16,24,40,.16);transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.pri{background:linear-gradient(180deg,#3170E6,#265DCB);color:#FFFFFF;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 1px #2459C4,0 2px 0 #1E4CA8,0 8px 16px -8px rgba(47,111,235,.7)}
+.pri:hover{transform:translateY(-1px)}
+.pri:active{transform:translateY(1px);box-shadow:inset 0 1px 2px rgba(0,0,0,.2),0 0 0 1px #2459C4}
+.ib{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;color:var(--text2);flex:none;transition:background .15s,color .15s}
+.ib:hover{background:rgba(16,24,40,.06);color:var(--text)}
+.bar{display:inline-flex;align-items:center;height:32px;border-radius:10px;overflow:hidden;flex:none}
+.bb{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;font-size:12.5px;font-weight:500;transition:background .15s}
+.bb:hover{background:rgba(16,24,40,.05)}
+.bb:active{background:rgba(16,24,40,.09)}
+.bb[aria-pressed="true"]{background:rgba(47,111,235,.12);color:var(--accText)}
+.dv{width:1px;height:16px;background:rgba(16,24,40,.1);flex:none}
+.av{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:600;color:var(--text2);flex:none}
+/* composer */
+.fld{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;min-height:42px;padding:6px 0;box-sizing:border-box;border-bottom:1px solid var(--line)}
+.lbl{width:30px;flex:none;font-size:13px;color:var(--text2)}
+.pk{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 8px;border-radius:9px;flex:none;white-space:nowrap;transition:background .15s ease}
+.pk:hover{background:rgba(16,24,40,.05)}
+.tok{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 3px;border-radius:13px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 1px rgba(16,24,40,.1);font-size:13px;white-space:nowrap;flex:none;animation:pop .22s cubic-bezier(.2,.8,.2,1) both}
+.tx{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;color:var(--text2);transition:background .15s,color .15s}
+.tx:hover{background:rgba(16,24,40,.08);color:var(--text)}
+.mi{display:flex;align-items:center;gap:10px;width:100%;height:29px;padding:0 8px 0 4px;box-sizing:border-box;border-radius:8px;text-align:left;white-space:nowrap;transition:background .12s ease}
+.mi:not(.on):hover{background:rgba(16,24,40,.05)}
+.mi.on{background:rgba(47,111,235,.1);box-shadow:inset 0 0 0 1px rgba(47,111,235,.16)}
+.mt{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(16,24,40,.1);color:var(--text2);flex:none}
+.mi.on .mt{background:#FFFFFF;color:var(--accText)}
+.mh{padding:4px 8px 3px;font-size:11.5px;font-weight:600;color:var(--text2)}
+.hint{margin-left:auto;padding-left:12px;font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums}
+.hd{display:inline-flex;align-items:center;justify-content:center;width:22px;height:24px;border-radius:6px;color:var(--text2);transition:background .15s,color .15s}
+.hd:hover{background:rgba(16,24,40,.06);color:var(--text)}
+.caret{display:inline-block;width:1.5px;height:19px;margin-left:1px;vertical-align:-4px;border-radius:1px;background:var(--acc);animation:blink 1.1s steps(1) infinite}
+li::marker{color:var(--text2)}
+@keyframes rin1{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes unfold{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:0}}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</helmet>
+<div class="app" style="position: relative; height: 100vh; min-height: 760px; overflow: hidden; background: #EEF0F5; color: var(--text); font-family: Inter, 'Segoe UI Variable Text', system-ui, -apple-system, sans-serif; font-optical-sizing: auto; font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased">
+
+<span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(155deg, #D6E2FB 0%, #EDF0F7 50%, #E3E0F5 100%)"></span>
+<svg aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.08; mix-blend-mode: multiply; pointer-events: none"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix></filter><rect width="100%" height="100%" filter="url(#grain)"></rect></svg>
+
+<div style="position: relative; display: flex; justify-content: center; height: 100%; box-sizing: border-box; padding: 12px">
+<main class="slab" aria-label="Rédaction" style="flex: 1 1 auto; min-width: 0; max-width: 860px; display: flex; flex-direction: column; overflow: hidden; border-radius: 18px; animation: rin1 .45s cubic-bezier(.2,.8,.2,1) both">
+
+<header style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 56px; padding: 0 14px 0 24px; border-bottom: 1px solid var(--line); flex: none">
+<h1 class="ell" style="margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.01em">Re : Atelier produit jeudi</h1>
+<span role="status" style="display: inline-flex; align-items: center; gap: 7px; margin-left: 4px; font-size: 12.5px; color: var(--text2); white-space: nowrap"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 50%; background: #16A34A; box-shadow: 0 0 0 3px rgba(22,163,74,.16)"></span>Brouillon synchronisé</span>
+<span style="flex: 1 1 auto"></span>
+<button class="btn ghost"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M21 11.5 12.6 19.9a5 5 0 0 1-7.1-7.1l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7L10.2 17.5a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8"></path></svg>Joindre</button>
+<button class="btn ghost"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M4 4h16v6H4zM4 14h7v6H4zM15 14h5v6h-5z"></path></svg>Modèle</button>
+<button class="ib" aria-label="Supprimer le brouillon" title="Supprimer le brouillon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></button>
+<div role="group" aria-label="Envoi" style="display: inline-flex; gap: 1px; margin-left: 4px; flex: none">
+<button class="btn pri" aria-keyshortcuts="Meta+Enter" style="height: 32px; padding: 0 12px 0 14px; border-radius: 10px 3px 3px 10px">Envoyer<span aria-hidden="true" style="margin-left: 2px; font-size: 12px; font-weight: 500">⌘⏎</span></button>
+<button class="btn pri" aria-label="Envoyer plus tard" title="Envoyer plus tard" aria-haspopup="menu" style="width: 30px; height: 32px; padding: 0; border-radius: 3px 10px 10px 3px"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke-width: 2"><path d="m6 9 6 6 6-6"></path></svg></button>
+</div>
+</header>
+
+<div style="flex: 1 1 auto; overflow: auto">
+<div style="padding: 0 48px 32px">
+
+<div class="fld">
+<span class="lbl">De</span>
+<button class="pk" aria-haspopup="listbox" style="margin-left: -8px">
+<span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 2px; background: #0F766E"></span>
+<span style="font-weight: 550">Léo Martin</span>
+<span style="color: var(--text2)">leo.martin@studio.example</span>
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; color: var(--text2)"><path d="m6 9 6 6 6-6"></path></svg>
+</button>
+<span style="flex: 1 1 auto"></span>
+<button class="pk" aria-haspopup="listbox" style="font-size: 12.5px; color: var(--text2)">Signature : Travail<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="m6 9 6 6 6-6"></path></svg></button>
+</div>
+
+<div class="fld">
+<label class="lbl" for="to">À</label>
+<sc-for list="{{to}}" as="p" hint-placeholder-count="2">
+<span class="tok" title="{{p.email}}"><span class="av well" aria-hidden="true" style="width: 20px; height: 20px; font-size: 8.5px">{{p.ini}}</span>{{p.name}}<button class="tx" aria-label="{{p.removeLabel}}" onClick="{{p.remove}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 11px; height: 11px; stroke-width: 2"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></span>
+</sc-for>
+<span style="position: relative; flex: 1 1 120px; min-width: 120px; display: flex">
+<input id="to" type="text" role="combobox" aria-autocomplete="list" aria-controls="ac" aria-expanded="{{acExp}}" autocomplete="off" value="{{q}}" onChange="{{onQ}}" style="flex: 1 1 auto; min-width: 0; height: 28px; border: 0; outline: 0; padding: 0; background: transparent; font-size: 13.5px">
+<sc-if value="{{acShow}}" hint-placeholder-val="{{true}}">
+<span id="ac" role="listbox" aria-label="Suggestions de destinataires" class="lift" style="position: absolute; z-index: 6; top: calc(100% + 9px); left: -10px; display: flex; flex-direction: column; gap: 2px; width: 380px; padding: 6px; box-sizing: border-box; border-radius: 13px; animation: pop .22s cubic-bezier(.2,.8,.2,1) both; transform-origin: top left">
+<sc-for list="{{sugg}}" as="c" hint-placeholder-count="2">
+<button role="option" aria-selected="{{c.selected}}" class="{{c.cls}}" onClick="{{c.pick}}" style="height: 36px; padding-left: 6px; gap: 9px">
+<span class="av well" aria-hidden="true" style="width: 24px; height: 24px; font-size: 9px">{{c.ini}}</span>
+<span style="flex: none; font-weight: 550">{{c.pre}}<span style="color: var(--accText)">{{c.mark}}</span>{{c.post}}</span>
+<span aria-hidden="true" style="flex: none; color: var(--text2)">·</span>
+<span class="ell" style="color: var(--text2)">{{c.sub}}</span>
+</button>
+</sc-for>
+</span>
+</sc-if>
+</span>
+<span style="display: inline-flex; gap: 2px; margin-left: auto">
+<sc-if value="{{showCcBtn}}" hint-placeholder-val="{{true}}"><button class="pk" title="Ajouter des destinataires en copie" onClick="{{openCc}}" style="height: 26px; font-size: 12.5px; color: var(--text2)">Cc</button></sc-if>
+<sc-if value="{{showBccBtn}}" hint-placeholder-val="{{true}}"><button class="pk" title="Ajouter des destinataires en copie cachée" onClick="{{openBcc}}" style="height: 26px; font-size: 12.5px; color: var(--text2)">Cci</button></sc-if>
+</span>
+</div>
+
+<sc-if value="{{cc}}" hint-placeholder-val="{{false}}">
+<div class="fld" style="animation: unfold .25s ease both">
+<label class="lbl" for="cc">Cc</label>
+<input id="cc" type="text" autocomplete="off" style="flex: 1 1 auto; min-width: 0; height: 28px; border: 0; outline: 0; padding: 0; background: transparent; font-size: 13.5px">
+</div>
+</sc-if>
+<sc-if value="{{bcc}}" hint-placeholder-val="{{false}}">
+<div class="fld" style="animation: unfold .25s ease both">
+<label class="lbl" for="bcc">Cci</label>
+<input id="bcc" type="text" autocomplete="off" style="flex: 1 1 auto; min-width: 0; height: 28px; border: 0; outline: 0; padding: 0; background: transparent; font-size: 13.5px">
+</div>
+</sc-if>
+
+<label class="sr" for="subj">Objet</label>
+<input id="subj" type="text" placeholder="Objet" value="{{subject}}" onChange="{{onSubject}}" style="display: block; width: 100%; box-sizing: border-box; border: 0; outline: 0; padding: 14px 0 0; background: transparent; font-size: 26px; font-weight: 650; line-height: 1.25; letter-spacing: -0.024em">
+
+<section aria-label="Brouillon rédigé par Claude" class="well" style="display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 11px 10px 11px 14px; border-radius: 14px">
+<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px; color: var(--accText)"><path d="M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z"></path></svg>
+<p style="flex: 1 1 auto; min-width: 0; margin: 0; font-size: 13px; line-height: 1.45"><span style="font-weight: 600; color: var(--accText)">Brouillon rédigé par Claude</span> à partir de “confirme, et propose d’envoyer mes notes avant” · <span style="color: var(--text2)">Relisez avant d’envoyer</span></p>
+<div role="group" aria-label="Ajuster le brouillon" style="display: flex; align-items: center; gap: 6px; flex: none">
+<button class="btn ghost" style="height: 28px; padding: 0 10px">Plus court</button>
+<button class="btn ghost" style="height: 28px; padding: 0 10px">Plus formel</button>
+<button class="btn ghost" style="height: 28px; padding: 0 10px">Traduire</button>
+<button class="ib" aria-label="Annuler la rédaction de Claude" title="Annuler la rédaction de Claude" style="width: 28px; height: 28px"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px"><path d="M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3"></path></svg></button>
+</div>
+</section>
+
+<div role="region" aria-label="Corps du message" style="display: flex; flex-direction: column; gap: 6px; margin-top: 14px; font-size: 15px; line-height: 1.65">
+<div>Bonjour Camille,</div>
+<blockquote style="margin: 0; padding: 2px 0 2px 14px; border-left: 3px solid rgba(16,24,40,.14); color: var(--text2)">Pouvez-vous me confirmer votre présence d’ici mercredi soir ?</blockquote>
+<div>C’est confirmé, je serai là <strong style="font-weight: 650">jeudi de 14 h à 16 h</strong> en salle Lumière. Je te propose de t’envoyer mes notes de priorisation avant l’atelier, <span style="position: relative; white-space: nowrap; border-radius: 3px; background: rgba(47,111,235,.2); box-shadow: 0 0 0 1px rgba(47,111,235,.18); font-weight: {{selW}}; font-style: {{selI}}; text-decoration: {{selD}}">pour qu’on gagne du temps<span style="position: absolute; z-index: 6; left: 50%; bottom: calc(100% + 9px); display: block; transform: translateX(-50%); font-size: 13px; font-weight: 400; font-style: normal; line-height: 1.4; white-space: nowrap"><span role="toolbar" aria-label="Mise en forme" class="bar chip" style="animation: pop .26s cubic-bezier(.2,.8,.2,1) both; transform-origin: bottom center">
+<button class="bb" aria-haspopup="menu" style="padding: 0 10px 0 12px">Texte<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; color: var(--text2)"><path d="m6 9 6 6 6-6"></path></svg></button>
+<span class="dv" aria-hidden="true"></span>
+<button class="bb" aria-label="Gras" title="Gras · ⌘B" aria-pressed="{{fB}}" onClick="{{tB}}" style="width: 30px; padding: 0; justify-content: center; font-weight: 700">B</button>
+<button class="bb" aria-label="Italique" title="Italique · ⌘I" aria-pressed="{{fI}}" onClick="{{tI}}" style="width: 30px; padding: 0; justify-content: center; font-style: italic">I</button>
+<button class="bb" aria-label="Souligné" title="Souligné · ⌘U" aria-pressed="{{fU}}" onClick="{{tU}}" style="width: 30px; padding: 0; justify-content: center; text-decoration: underline; text-underline-offset: 2px">U</button>
+<button class="bb" aria-label="Barré" title="Barré" aria-pressed="{{fS}}" onClick="{{tS}}" style="width: 30px; padding: 0; justify-content: center; text-decoration: line-through">S</button>
+<span class="dv" aria-hidden="true"></span>
+<button class="bb" aria-label="Lien" title="Lien · ⌘K" style="width: 34px; padding: 0; justify-content: center"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg></button>
+<span class="dv" aria-hidden="true"></span>
+<button class="bb" style="color: var(--accText); font-weight: 600"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z"></path></svg>Réécrire</button>
+</span></span></span> sur la deuxième partie. Elles complètent la <span style="color: var(--accText); text-decoration: underline; text-decoration-color: rgba(41,98,207,.4); text-underline-offset: 3px">synthèse des retours bêta</span> et couvrent :</div>
+<ul style="display: flex; flex-direction: column; gap: 2px; margin: 0; padding-left: 22px">
+<li>les trois sujets que je propose de prioriser ce trimestre ;</li>
+<li>une première estimation de l’effort pour chacun ;</li>
+<li>les questions encore ouvertes pour Inès.</li>
+</ul>
+<sc-if value="{{file}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; align-items: center; gap: 10px; align-self: flex-start; height: 44px; padding: 0 6px 0 7px; border-radius: 12px; background: rgba(255,255,255,.55); box-shadow: inset 0 0 0 1px rgba(16,24,40,.1); font-size: 13px; line-height: 1.3">
+<span class="well" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; font-size: 9px; font-weight: 700; color: var(--text2)">MD</span>
+<span style="display: flex; flex-direction: column"><span style="font-weight: 550">notes-priorisation.md</span><span style="font-size: 11.5px; color: var(--text2)">4 Ko</span></span>
+<button class="ib" aria-label="Retirer notes-priorisation.md" title="Retirer la pièce jointe" onClick="{{removeFile}}" style="width: 26px; height: 26px; margin-left: 8px"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+</div>
+</sc-if>
+<div>À jeudi,<br>Léo</div>
+
+<div style="position: relative; z-index: 5; min-height: 25px">
+<span style="position: absolute; top: 0; left: -48px; display: flex; align-items: center; height: 25px">
+<button class="hd" aria-label="Insérer un bloc" aria-expanded="{{menuExp}}" onClick="{{toggleMenu}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M12 5v14M5 12h14"></path></svg></button>
+<button class="hd" aria-label="Déplacer le bloc" title="Glisser pour déplacer"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke-width: 2.6"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"></path></svg></button>
+</span>
+<sc-if value="{{menu}}" hint-placeholder-val="{{true}}">
+<span>/</span><span class="caret" aria-hidden="true"></span>
+<div role="menu" aria-label="Blocs et insertions" class="lift" style="position: absolute; top: calc(100% + 6px); left: -8px; display: flex; width: 480px; padding: 6px; box-sizing: border-box; border-radius: 13px; font-size: 13px; line-height: 1.4; animation: pop .24s cubic-bezier(.2,.8,.2,1) both; transform-origin: top left">
+<div role="group" aria-labelledby="mh1" style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<div class="mh" id="mh1">Blocs</div>
+<sc-for list="{{blocks}}" as="b" hint-placeholder-count="6">
+<button role="menuitem" class="{{b.cls}}" onClick="{{b.pick}}"><span class="mt" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 14px; height: 14px"><path d="{{b.icon}}"></path></svg></span>{{b.label}}<span class="hint" aria-hidden="true">{{b.hint}}</span></button>
+</sc-for>
+</div>
+<span aria-hidden="true" style="width: 1px; margin: 6px; background: var(--line); flex: none"></span>
+<div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<div role="group" aria-labelledby="mh2" style="display: flex; flex-direction: column; gap: 1px">
+<div class="mh" id="mh2">Insérer</div>
+<sc-for list="{{inserts}}" as="b" hint-placeholder-count="2">
+<button role="menuitem" class="mi" onClick="{{b.pick}}"><span class="mt" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width: 14px; height: 14px"><path d="{{b.icon}}"></path></svg></span>{{b.label}}</button>
+</sc-for>
+</div>
+<div role="group" aria-labelledby="mh3" style="display: flex; flex-direction: column; gap: 1px">
+<div class="mh" id="mh3">Agent</div>
+<button role="menuitem" class="mi" aria-keyshortcuts="Meta+J" onClick="{{pickAgent}}"><span class="mt" aria-hidden="true" style="color: var(--accText)"><svg class="i" viewBox="0 0 24 24" style="width: 13px; height: 13px"><path d="M12 3c.6 4.6 3.9 8 8.5 9-4.6.6-7.9 3.9-8.5 8.5-.6-4.6-3.9-7.9-8.5-8.5C8.1 11 11.4 7.6 12 3z"></path></svg></span><span style="font-weight: 550; color: var(--accText)">Continuer avec Claude</span><span class="hint" aria-hidden="true">⌘J</span></button>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{noMenu}}" hint-placeholder-val="{{false}}">
+<span class="caret" aria-hidden="true"></span><span style="color: var(--text2)">Écrivez, ou tapez / pour insérer un bloc</span>
+</sc-if>
+</div>
+</div>
+
+</div>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+const CONTACTS = [
+  { name: "Camille Roux", email: "camille.roux@studio.example", sub: "camille.roux@studio.example" },
+  { name: "Inès Morel", email: "ines.morel@studio.example", sub: "ines.morel@studio.example" },
+  { name: "Lucas Petit", email: "lucas.petit@studio.example", sub: "lucas.petit@studio.example" },
+  { name: "Lucie Bernard", email: "lucie.bernard@mail.example", sub: "Contacts macOS" },
+  { name: "Julien Faure", email: "julien.faure@mail.example", sub: "Contacts macOS" },
+  { name: "Mathilde Garnier", email: "mathilde.garnier@mail.example", sub: "mathilde.garnier@mail.example" }
+];
+const BLOCKS = [
+  { label: "Texte", hint: "", icon: "M5 5h14M12 5v14" },
+  { label: "Titre", hint: "#", icon: "M6 4v16M18 4v16M6 12h12" },
+  { label: "Liste à puces", hint: "-", icon: "M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01" },
+  { label: "Liste numérotée", hint: "1.", icon: "M10 6h10M10 12h10M10 18h10M4 5l1.5-1v5M3.5 14.5a1.5 1.5 0 0 1 3 .5c0 1-3 2-3 3.5h3" },
+  { label: "Citation", hint: ">", icon: "M5 4v16M10 8h9M10 12h9M10 16h6" },
+  { label: "Séparateur", hint: "---", icon: "M3 12h18M8 5h8M8 19h8" }
+];
+const INSERTS = [
+  { label: "Fichier ou image", icon: "M4 5h16v14H4zM4 16l5-5 4 4 2-2 5 5M15 9h.01" },
+  { label: "Modèle", icon: "M4 4h16v6H4zM4 14h7v6H4zM15 14h5v6h-5z" }
+];
+const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const initials = (name) => name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { to: ["Camille Roux", "Inès Morel"], q: "lu", cc: false, bcc: false, subject: "Re : Atelier produit jeudi — ordre du jour", fmt: { b: false, i: false, u: false, s: false }, file: true, menu: true };
+  }
+  toggleFmt(k) { this.setState({ fmt: { ...this.state.fmt, [k]: !this.state.fmt[k] } }); }
+  renderVals() {
+    const s = this.state;
+    const q = norm(s.q.trim());
+    // a contact matches when one of its name words, or its address, starts with the typed text
+    const sugg = !q ? [] : CONTACTS.filter((c) => s.to.indexOf(c.name) < 0 && (norm(c.name).split(" ").some((w) => w.indexOf(q) === 0) || norm(c.email).indexOf(q) === 0));
+    const mark = (name) => {
+      const n = norm(name);
+      let i = n.indexOf(q) === 0 ? 0 : n.indexOf(" " + q);
+      if (i > 0) i += 1;
+      return i < 0 ? { pre: name, mark: "", post: "" } : { pre: name.slice(0, i), mark: name.slice(i, i + q.length), post: name.slice(i + q.length) };
+    };
+    const closeMenu = () => this.setState({ menu: false });
+    const deco = [s.fmt.u ? "underline" : "", s.fmt.s ? "line-through" : ""].join(" ").trim() || "none";
+    return {
+      to: s.to.map((name) => ({
+        name,
+        email: CONTACTS.find((c) => c.name === name).email,
+        ini: initials(name),
+        removeLabel: "Retirer " + name,
+        remove: () => this.setState({ to: this.state.to.filter((n) => n !== name) })
+      })),
+      q: s.q,
+      onQ: (e) => this.setState({ q: e.target.value }),
+      acShow: sugg.length > 0,
+      acExp: sugg.length > 0 ? "true" : "false",
+      sugg: sugg.map((c, i) => ({
+        ...c,
+        ...mark(c.name),
+        ini: initials(c.name),
+        cls: i === 0 ? "mi on" : "mi",
+        selected: i === 0 ? "true" : "false",
+        pick: () => this.setState({ to: this.state.to.concat([c.name]), q: "" })
+      })),
+      cc: s.cc,
+      bcc: s.bcc,
+      showCcBtn: !s.cc,
+      showBccBtn: !s.bcc,
+      openCc: () => this.setState({ cc: true }),
+      openBcc: () => this.setState({ bcc: true }),
+      subject: s.subject,
+      onSubject: (e) => this.setState({ subject: e.target.value }),
+      fB: s.fmt.b ? "true" : "false",
+      fI: s.fmt.i ? "true" : "false",
+      fU: s.fmt.u ? "true" : "false",
+      fS: s.fmt.s ? "true" : "false",
+      tB: () => this.toggleFmt("b"),
+      tI: () => this.toggleFmt("i"),
+      tU: () => this.toggleFmt("u"),
+      tS: () => this.toggleFmt("s"),
+      selW: s.fmt.b ? 650 : 400,
+      selI: s.fmt.i ? "italic" : "normal",
+      selD: deco,
+      file: s.file,
+      removeFile: () => this.setState({ file: false }),
+      menu: s.menu,
+      noMenu: !s.menu,
+      menuExp: s.menu ? "true" : "false",
+      toggleMenu: () => this.setState({ menu: !this.state.menu }),
+      blocks: BLOCKS.map((b, i) => ({ ...b, cls: i === 0 ? "mi on" : "mi", pick: closeMenu })),
+      inserts: INSERTS.map((b) => ({ ...b, pick: closeMenu })),
+      pickAgent: closeMenu
+    };
+  }
+}
+</script>
+</body>
+</html>
