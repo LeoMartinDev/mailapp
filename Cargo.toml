@@ -1,0 +1,23 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/core",
+    "crates/infrastructure/imap",
+    "crates/infrastructure/sqlite",
+    "crates/mail-render",
+    "crates/mailapp",
+    "crates/ui",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+
+[workspace.dependencies]
+mailapp-core = { path = "crates/core" }
+mailapp-imap = { path = "crates/infrastructure/imap" }
+mailapp-mail-render = { path = "crates/mail-render" }
+mailapp-sqlite = { path = "crates/infrastructure/sqlite" }
+mailapp-ui = { path = "crates/ui" }

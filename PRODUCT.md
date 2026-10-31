@@ -230,21 +230,26 @@ Autonomy (later) plugs into the same mechanism: a per-account allow-list of comm
 
 ### 8.1 Overview
 
-Hexagonal architecture (ports & adapters) with a light CQRS split in the application layer and in-memory domain events. No event sourcing: the mail server is the source of truth, so rebuilding state from our own events would mean reconciling twice.
+Hexagonal architecture (ports & adapters) with a light CQRS split in the core and in-memory domain events. No event sourcing: the mail server is the source of truth, so rebuilding state from our own events would mean reconciling twice.
+
+Three groups around one executable:
 
 ```
-entrypoints/      ui (GPUI) · mcp (HTTP)
-     │ send commands, run queries
-application/      commands · queries · handlers · ports (traits) · event bus · sync engine · tool registry
-     │ depends on
-domain/           Account · Message · Thread · Label · Draft · Contact · domain events · pure rules (no I/O)
+mailapp/          the executable: builds the infrastructure adapters, hands them to the core, opens the UI
+     │ assembles
+ui/ · mcp/        talk to the user (GPUI) and to agents (HTTP): send actions, run queries, listen to events
+     │ use
+core/             the mail logic, no I/O
+                  model: Account · Message · Thread · Label · Draft · Contact · pure rules
+                  actions (commands) · queries · events · ports (traits) · event bus · sync engine · tool registry
      ▲ ports implemented by
-infrastructure/   imap · imap-gmail · smtp · microsoft · jmap · sqlite · secrets · contacts-*
+infrastructure/   talk to the outside world: imap · imap-gmail · smtp · microsoft · jmap · sqlite · secrets · contacts-*
                   agent-anthropic · agent-openai-compat · agent-cli
-app/              binary — composition root: builds adapters and wires them to ports
 ```
 
-Dependencies always point inward. Each layer and each adapter is its own crate, so the compiler forbids the domain from importing SQLite or IMAP.
+Dependencies always point inward: `ui`, `mcp` and every infrastructure crate depend on `core`, and `core` depends on none of them. Each is its own crate, so the compiler forbids the core from importing GPUI, SQLite or IMAP. Inside `core`, the model stays free of ports and I/O by convention.
+
+`mail-render` is a piece of the UI, in its own crate so that Blitz's heavy dependencies and a possible engine swap stay out of `ui`.
 
 ### 8.2 Commands, queries, events
 
@@ -269,7 +274,7 @@ Example — adding agent classification later is one handler and one prompt:
 
 ```
 IMAP sync → MailStore.save → MessageReceived
-  → ClassifyOnReceive handler (application/)
+  → ClassifyOnReceive handler (core)
   → AgentProvider.complete(prompt)
   → command ApplyLabel { actor: Agent } → journal (undoable) → provider
 ```
@@ -325,6 +330,8 @@ Mitigations for Blitz being beta: a pinned fork carrying our patches, a corpus o
 
 ### 8.6 UI
 
+- The UI only talks to the core: it sends actions (commands), runs queries and listens to events. It never sees IMAP or SQLite.
+- Inside the `ui` crate, `design/` holds the tokens and components (the only code that knows how things look) and `screens/` holds one view and one view-model per screen.
 - One **view-model per screen**, as a GPUI entity: holds query results, subscribes to relevant domain events, calls `cx.notify()`. Views only render and dispatch commands. Changes made by an agent through MCP show up in the UI automatically.
 - Shortcuts use GPUI actions and `KeyBinding`; the keymap is stored in settings and edited in the settings screen.
 - i18n with Fluent (English, French).
@@ -332,14 +339,13 @@ Mitigations for Blitz being beta: a pinned fork carrying our patches, a corpus o
 
 ### 8.7 Mobile readiness
 
-`domain`, `application` and `infrastructure` crates must not depend on desktop-only APIs. CI runs `cargo check --target aarch64-apple-ios` on them. Zed ships an experimental `gpui_ios` backend (touch, scrolling, native text input; no file pickers yet). The real blocker for iOS is background mail notifications, which require a push server — at odds with "no mailapp server". To be decided when relevant.
+`core` and the infrastructure crates must not depend on desktop-only APIs. CI runs `cargo check --target aarch64-apple-ios` on them. Zed ships an experimental `gpui_ios` backend (touch, scrolling, native text input; no file pickers yet). The real blocker for iOS is background mail notifications, which require a push server — at odds with "no mailapp server". To be decided when relevant.
 
 ### 8.8 Workspace layout
 
 ```
 crates/
-  domain/
-  application/
+  core/                  model, rules, actions, queries, events, ports, sync engine (no I/O)
   infrastructure/
     sqlite/              MailStore + journal (SQLCipher, FTS5)
     imap/                generic IMAP (async-imap)
@@ -350,12 +356,13 @@ crates/
     secrets/             keyring
     contacts-macos/  contacts-carddav/  contacts-microsoft/
     agent-anthropic/  agent-openai-compat/  agent-cli/
-  entrypoints/
-    ui/                  GPUI views, view-models, components, theme, i18n
-    mcp/                 MCP HTTP server
-  mail-render/           sanitize + preprocess + Blitz → GPUI
-  app/                   binary, composition root
+  ui/                    GPUI: design system (design/), screens and view-models (screens/), i18n
+  mcp/                   MCP HTTP server
+  mail-render/           sanitize + preprocess + Blitz → GPUI, used by ui
+  mailapp/               the executable: assembles everything
 ```
+
+Package names are prefixed `mailapp-` (`mailapp-core`, `mailapp-imap`…); the executable is `mailapp`. Zed's `ui` crate is imported as `zed_ui` (`zed_ui = { package = "ui", … }`), so `ui` in our code never means two things.
 
 ## 9. Security & privacy
 
@@ -384,7 +391,7 @@ crates/
 
 ## 11. Testing
 
-- **Domain & application**: unit tests with in-memory fakes of every port (`FakeMailProvider`, `FakeAgentProvider`, …).
+- **Core**: unit tests with in-memory fakes of every port (`FakeMailProvider`, `FakeAgentProvider`, …).
 - **Mail adapters**: integration tests against real servers in Docker (Stalwart for IMAP/JMAP/SMTP, GreenMail as a second IMAP implementation).
 - **Rendering**: snapshot tests on a corpus of real, anonymized emails (newsletters, transactional, Outlook-generated).
 - **Agents**: recorded responses replayed in CI; no network calls.
