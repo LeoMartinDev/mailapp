@@ -1,22 +1,23 @@
-//! A single-line text input. It edits through GPUI's platform input handler, which is what lets the
-//! OS input methods (dead keys, accents, Asian input methods, the emoji picker) write into it.
-//! Adapted from GPUI's `examples/input.rs` (Apache-2.0), informed by gpui-component's Input (Apache-2.0).
+//! A text input, on one line or several. It edits through GPUI's platform input handler, which is
+//! what lets the OS input methods (dead keys, accents, Asian input methods, the emoji picker) write
+//! into it. Adapted from GPUI's `examples/input.rs` (Apache-2.0), informed by gpui-component's Input
+//! (Apache-2.0).
 
 mod buffer;
 
-use std::ops::Range;
+use std::{ops::Range, rc::Rc};
 
 use gpui::{
     Action, App, Bounds, ClipboardItem, CursorStyle, ElementId, ElementInputHandler, Entity,
     EntityInputHandler, FocusHandle, GlobalElementId, InspectorElementId, KeyBinding, LayoutId,
     MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, PaintQuad, Pixels, Point,
-    ShapedLine, Style, TextAlign, TextRun, UTF16Selection, UnderlineStyle, actions, fill, point,
-    relative, size,
+    ScrollEvent, Style, TextAlign, TextRun, UTF16Selection, UnderlineStyle, WrappedLine, actions,
+    fill, point, relative, size,
 };
 use theme::ActiveTheme as _;
 use zed_ui::prelude::*;
 
-use buffer::Buffer;
+use buffer::{Buffer, Layout};
 
 const KEY_CONTEXT: &str = "TextInput";
 const CURSOR_WIDTH: Pixels = px(2.);
@@ -28,8 +29,12 @@ actions!(
         Delete,
         Left,
         Right,
+        Up,
+        Down,
         SelectLeft,
         SelectRight,
+        SelectUp,
+        SelectDown,
         WordLeft,
         WordRight,
         SelectWordLeft,
@@ -38,7 +43,14 @@ actions!(
         End,
         SelectHome,
         SelectEnd,
+        TextStart,
+        TextEnd,
+        SelectTextStart,
+        SelectTextEnd,
         SelectAll,
+        Newline,
+        Undo,
+        Redo,
         Copy,
         Cut,
         Paste,
@@ -59,8 +71,12 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("delete", Delete, context),
         KeyBinding::new("left", Left, context),
         KeyBinding::new("right", Right, context),
+        KeyBinding::new("up", Up, context),
+        KeyBinding::new("down", Down, context),
         KeyBinding::new("shift-left", SelectLeft, context),
         KeyBinding::new("shift-right", SelectRight, context),
+        KeyBinding::new("shift-up", SelectUp, context),
+        KeyBinding::new("shift-down", SelectDown, context),
         KeyBinding::new(&format!("{word}-left"), WordLeft, context),
         KeyBinding::new(&format!("{word}-right"), WordRight, context),
         KeyBinding::new(&format!("{word}-shift-left"), SelectWordLeft, context),
@@ -70,6 +86,9 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("shift-home", SelectHome, context),
         KeyBinding::new("shift-end", SelectEnd, context),
         KeyBinding::new("secondary-a", SelectAll, context),
+        KeyBinding::new("enter", Newline, context),
+        KeyBinding::new("secondary-z", Undo, context),
+        KeyBinding::new("secondary-shift-z", Redo, context),
         KeyBinding::new("secondary-c", Copy, context),
         KeyBinding::new("secondary-x", Cut, context),
         KeyBinding::new("secondary-v", Paste, context),
@@ -81,8 +100,20 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("cmd-right", End, context),
         KeyBinding::new("cmd-shift-left", SelectHome, context),
         KeyBinding::new("cmd-shift-right", SelectEnd, context),
+        KeyBinding::new("cmd-up", TextStart, context),
+        KeyBinding::new("cmd-down", TextEnd, context),
+        KeyBinding::new("cmd-shift-up", SelectTextStart, context),
+        KeyBinding::new("cmd-shift-down", SelectTextEnd, context),
         // Without a menu bar, nothing else opens the emoji picker.
         KeyBinding::new("ctrl-cmd-space", ShowCharacterPalette, context),
+    ]);
+    #[cfg(not(target_os = "macos"))]
+    cx.bind_keys([
+        KeyBinding::new("ctrl-home", TextStart, context),
+        KeyBinding::new("ctrl-end", TextEnd, context),
+        KeyBinding::new("ctrl-shift-home", SelectTextStart, context),
+        KeyBinding::new("ctrl-shift-end", SelectTextEnd, context),
+        KeyBinding::new("ctrl-y", Redo, context),
     ]);
 }
 
@@ -90,10 +121,12 @@ pub struct TextInput {
     focus_handle: FocusHandle,
     buffer: Buffer,
     placeholder: SharedString,
-    /// Keeps the cursor in view when the text is wider than the input.
-    scroll_x: Pixels,
+    /// Keeps the cursor in view when the text does not fit in the input.
+    scroll: Point<Pixels>,
+    /// Set by edits and moves; the mouse wheel scrolls away from the cursor.
+    scroll_to_cursor: bool,
     /// What was last painted, to turn mouse positions and OS ranges into text offsets and back.
-    last_layout: Option<ShapedLine>,
+    last_layout: Option<Rc<ShapedText>>,
     last_bounds: Option<Bounds<Pixels>>,
     is_selecting: bool,
 }
@@ -104,11 +137,18 @@ impl TextInput {
             focus_handle: cx.focus_handle(),
             buffer: Buffer::default(),
             placeholder: placeholder.into(),
-            scroll_x: px(0.),
+            scroll: Point::default(),
+            scroll_to_cursor: false,
             last_layout: None,
             last_bounds: None,
             is_selecting: false,
         }
+    }
+
+    /// Enter inserts a line break and long lines wrap. The input takes the height of its parent.
+    pub fn multi_line(mut self) -> Self {
+        self.buffer = Buffer::new(true);
+        self
     }
 
     fn edit(
@@ -118,6 +158,7 @@ impl TextInput {
         edit: impl FnOnce(&mut Buffer),
     ) {
         edit(&mut self.buffer);
+        self.scroll_to_cursor = true;
         window.notify_text_input_changed(&self.focus_handle);
         cx.notify();
     }
@@ -132,15 +173,13 @@ impl TextInput {
     fn cut(&mut self, _: &Cut, window: &mut Window, cx: &mut Context<Self>) {
         if !self.buffer.selection().is_empty() {
             self.copy(&Copy, window, cx);
-            self.edit(window, cx, Buffer::delete_backward);
+            self.edit(window, cx, |buffer| buffer.replace_selection(""));
         }
     }
 
     fn paste(&mut self, _: &Paste, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(text) = cx.read_from_clipboard().and_then(|item| item.text()) {
-            self.edit(window, cx, |buffer| {
-                buffer.replace_text_in_range(None, &text)
-            });
+            self.edit(window, cx, |buffer| buffer.replace_selection(&text));
         }
     }
 
@@ -151,7 +190,7 @@ impl TextInput {
         cx: &mut Context<Self>,
     ) {
         self.is_selecting = true;
-        if let Some(offset) = self.offset_for_x(event.position.x) {
+        if let Some(offset) = self.offset_for_point(event.position) {
             self.edit(window, cx, |buffer| {
                 if event.modifiers.shift {
                     buffer.select_to(offset)
@@ -169,7 +208,7 @@ impl TextInput {
         cx: &mut Context<Self>,
     ) {
         if self.is_selecting
-            && let Some(offset) = self.offset_for_x(event.position.x)
+            && let Some(offset) = self.offset_for_point(event.position)
         {
             self.edit(window, cx, |buffer| buffer.select_to(offset));
         }
@@ -179,14 +218,23 @@ impl TextInput {
         self.is_selecting = false;
     }
 
-    /// `None` until the current text has been painted: an offset from an older layout may fall
-    /// inside a char of the new text.
-    fn offset_for_x(&self, x: Pixels) -> Option<usize> {
-        let line = self.last_layout.as_ref()?;
-        if line.text.as_ref() != self.buffer.text() {
-            return None;
-        }
-        Some(line.closest_index_for_x(x - self.last_bounds?.left() + self.scroll_x))
+    fn on_scroll(&mut self, event: &ScrollEvent, window: &mut Window, cx: &mut Context<Self>) {
+        self.scroll -= event.delta.pixel_delta(window.line_height());
+        self.scroll_to_cursor = false;
+        cx.notify();
+    }
+
+    /// `None` until the current text has been painted: an offset from the layout of an older text
+    /// may fall inside a char of the new one.
+    fn layout(&self) -> Option<Rc<ShapedText>> {
+        self.last_layout
+            .clone()
+            .filter(|layout| layout.text.as_ref() == self.buffer.text())
+    }
+
+    fn offset_for_point(&self, point: Point<Pixels>) -> Option<usize> {
+        let origin = self.last_bounds?.origin - self.scroll;
+        Some(self.layout()?.offset_for_position(point - origin))
     }
 }
 
@@ -268,15 +316,20 @@ impl EntityInputHandler for TextInput {
         _: &mut Window,
         _: &mut Context<Self>,
     ) -> Option<Bounds<Pixels>> {
-        let line = self.last_layout.as_ref()?;
+        let layout = self.last_layout.as_ref()?;
         let range = self.buffer.range_from_utf16(&range_utf16);
-        let x = |offset| {
-            (bounds.left() - self.scroll_x + line.x_for_index(offset))
-                .clamp(bounds.left(), bounds.right())
+        let origin = bounds.origin - self.scroll;
+        let start = origin + layout.position_for_offset(range.start);
+        let end = origin + layout.position_for_offset(range.end);
+        let clamp = |corner: Point<Pixels>| {
+            point(
+                corner.x.clamp(bounds.left(), bounds.right()),
+                corner.y.clamp(bounds.top(), bounds.bottom()),
+            )
         };
         Some(Bounds::from_corners(
-            point(x(range.start), bounds.top()),
-            point(x(range.end), bounds.bottom()),
+            clamp(start),
+            clamp(point(end.x.max(start.x), start.y + layout.line_height)),
         ))
     }
 
@@ -287,13 +340,14 @@ impl EntityInputHandler for TextInput {
         _: &mut Context<Self>,
     ) -> Option<usize> {
         self.last_bounds?.localize(&point)?;
-        Some(self.buffer.offset_to_utf16(self.offset_for_x(point.x)?))
+        Some(self.buffer.offset_to_utf16(self.offset_for_point(point)?))
     }
 }
 
 impl Render for TextInput {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let colors = cx.theme().colors();
+        let multi_line = self.buffer.multi_line();
         div()
             .key_context(KEY_CONTEXT)
             .track_focus(&self.focus_handle)
@@ -302,11 +356,23 @@ impl Render for TextInput {
             .on_action(on::<Delete>(cx, Buffer::delete_forward))
             .on_action(on::<Left>(cx, Buffer::move_left))
             .on_action(on::<Right>(cx, Buffer::move_right))
+            .on_action(on_layout::<Up>(cx, |b, l| {
+                b.move_vertically(l, false, false)
+            }))
+            .on_action(on_layout::<Down>(cx, |b, l| {
+                b.move_vertically(l, true, false)
+            }))
             .on_action(on::<SelectLeft>(cx, |b| {
                 b.select_to(b.previous_grapheme(b.cursor()))
             }))
             .on_action(on::<SelectRight>(cx, |b| {
                 b.select_to(b.next_grapheme(b.cursor()))
+            }))
+            .on_action(on_layout::<SelectUp>(cx, |b, l| {
+                b.move_vertically(l, false, true)
+            }))
+            .on_action(on_layout::<SelectDown>(cx, |b, l| {
+                b.move_vertically(l, true, true)
             }))
             .on_action(on::<WordLeft>(cx, |b| {
                 b.move_to(b.previous_word_start(b.cursor()))
@@ -320,11 +386,26 @@ impl Render for TextInput {
             .on_action(on::<SelectWordRight>(cx, |b| {
                 b.select_to(b.next_word_end(b.cursor()))
             }))
-            .on_action(on::<Home>(cx, |b| b.move_to(0)))
-            .on_action(on::<End>(cx, |b| b.move_to(b.text().len())))
-            .on_action(on::<SelectHome>(cx, |b| b.select_to(0)))
-            .on_action(on::<SelectEnd>(cx, |b| b.select_to(b.text().len())))
+            .on_action(on_layout::<Home>(cx, |b, l| {
+                b.move_to(b.line_edge(l, false))
+            }))
+            .on_action(on_layout::<End>(cx, |b, l| b.move_to(b.line_edge(l, true))))
+            .on_action(on_layout::<SelectHome>(cx, |b, l| {
+                b.select_to(b.line_edge(l, false))
+            }))
+            .on_action(on_layout::<SelectEnd>(cx, |b, l| {
+                b.select_to(b.line_edge(l, true))
+            }))
+            .on_action(on::<TextStart>(cx, |b| b.move_to(0)))
+            .on_action(on::<TextEnd>(cx, |b| b.move_to(b.text().len())))
+            .on_action(on::<SelectTextStart>(cx, |b| b.select_to(0)))
+            .on_action(on::<SelectTextEnd>(cx, |b| b.select_to(b.text().len())))
             .on_action(on::<SelectAll>(cx, Buffer::select_all))
+            .when(multi_line, |input| {
+                input.on_action(on::<Newline>(cx, |b| b.replace_text_in_range(None, "\n")))
+            })
+            .on_action(on::<Undo>(cx, Buffer::undo))
+            .on_action(on::<Redo>(cx, Buffer::redo))
             .on_action(cx.listener(Self::copy))
             .on_action(cx.listener(Self::cut))
             .on_action(cx.listener(Self::paste))
@@ -333,7 +414,9 @@ impl Render for TextInput {
             .on_mouse_up(MouseButton::Left, cx.listener(Self::on_mouse_up))
             .on_mouse_up_out(MouseButton::Left, cx.listener(Self::on_mouse_up))
             .on_mouse_move(cx.listener(Self::on_mouse_move))
+            .on_scroll(cx.listener(Self::on_scroll))
             .w_full()
+            .when(multi_line, |input| input.h_full())
             .px_2()
             .py_1()
             .rounded_sm()
@@ -347,7 +430,12 @@ impl Render for TextInput {
             .font_ui(cx)
             .text_ui(cx)
             .text_color(colors.text)
-            .child(div().overflow_hidden().child(TextElement(cx.entity())))
+            .child(
+                div()
+                    .h_full()
+                    .overflow_hidden()
+                    .child(TextElement(cx.entity())),
+            )
     }
 }
 
@@ -359,13 +447,122 @@ fn on<A: Action>(
     cx.listener(move |this, _: &A, window, cx| this.edit(window, cx, edit))
 }
 
+/// Like `on`, for the moves that depend on where the lines wrap.
+fn on_layout<A: Action>(
+    cx: &Context<TextInput>,
+    edit: fn(&mut Buffer, &ShapedText),
+) -> impl Fn(&A, &mut Window, &mut App) + 'static {
+    cx.listener(move |this, _: &A, window, cx| {
+        // shortcut: a key pressed before the last edit is painted is dropped; rare at human
+        // speed, lay the text out on demand if it shows.
+        if let Some(layout) = this.layout() {
+            this.edit(window, cx, |buffer| edit(buffer, &layout))
+        }
+    })
+}
+
+/// The text as shaped for painting: one `WrappedLine` per line of the text, cut into rows where it
+/// wraps.
+struct ShapedText {
+    text: SharedString,
+    lines: Vec<WrappedLine>,
+    rows: Vec<Row>,
+    line_height: Pixels,
+}
+
+/// A visual line: a line of the text, or the part of it on one row when it wraps.
+struct Row {
+    /// Index in `ShapedText::lines`, and the offset where that line starts in the text.
+    line: usize,
+    line_start: usize,
+    range: Range<usize>,
+}
+
+impl ShapedText {
+    fn new(text: SharedString, lines: Vec<WrappedLine>, line_height: Pixels) -> Self {
+        let mut rows = Vec::new();
+        let mut line_start = 0;
+        for (ix, line) in lines.iter().enumerate() {
+            let wraps = line
+                .wrap_boundaries()
+                .iter()
+                .map(|wrap| line.runs()[wrap.run_ix].glyphs[wrap.glyph_ix].index);
+            let mut start = line_start;
+            for end in wraps.chain([line.len()]) {
+                rows.push(Row {
+                    line: ix,
+                    line_start,
+                    range: start..line_start + end,
+                });
+                start = line_start + end;
+            }
+            line_start += line.len() + 1;
+        }
+        Self {
+            text,
+            lines,
+            rows,
+            line_height,
+        }
+    }
+
+    /// Where `offset` is drawn on `row`, from the left edge of the input.
+    fn x(&self, row: &Row, offset: usize) -> Pixels {
+        let line = &self.lines[row.line].unwrapped_layout;
+        line.x_for_index(offset - row.line_start)
+            - line.x_for_index(row.range.start - row.line_start)
+    }
+}
+
+impl Layout for ShapedText {
+    /// Where a line wraps, the cursor shows at the start of the next row.
+    fn position_for_offset(&self, offset: usize) -> Point<Pixels> {
+        let ix = self
+            .rows
+            .partition_point(|row| row.range.start <= offset)
+            .saturating_sub(1);
+        self.rows.get(ix).map_or(Point::default(), |row| {
+            point(
+                self.x(row, offset.min(row.range.end)),
+                self.line_height * ix,
+            )
+        })
+    }
+
+    fn offset_for_position(&self, position: Point<Pixels>) -> usize {
+        if position.y < px(0.) {
+            return 0;
+        }
+        let ix = (position.y / self.line_height) as usize;
+        let Some(row) = self.rows.get(ix) else {
+            return self.text.len();
+        };
+        let line = &self.lines[row.line].unwrapped_layout;
+        let x = line.x_for_index(row.range.start - row.line_start) + position.x;
+        let offset =
+            (row.line_start + line.closest_index_for_x(x)).clamp(row.range.start, row.range.end);
+        // A wrapped row ends where the next one starts: stay on this one, before its last char.
+        match self.rows.get(ix + 1) {
+            Some(next) if next.range.start == offset => self.text[..offset]
+                .chars()
+                .next_back()
+                .map_or(offset, |char| offset - char.len_utf8()),
+            _ => offset,
+        }
+    }
+
+    fn line_height(&self) -> Pixels {
+        self.line_height
+    }
+}
+
 /// Draws the text, the selection and the cursor, and hands the OS the input handler while focused.
 struct TextElement(Entity<TextInput>);
 
 struct PrepaintState {
-    line: ShapedLine,
-    scroll_x: Pixels,
-    selection: Option<PaintQuad>,
+    layout: Rc<ShapedText>,
+    scroll: Point<Pixels>,
+    selection: Vec<PaintQuad>,
     cursor: PaintQuad,
 }
 
@@ -398,7 +595,11 @@ impl Element for TextElement {
     ) -> (LayoutId, Self::RequestLayoutState) {
         let mut style = Style::default();
         style.size.width = relative(1.).into();
-        style.size.height = window.line_height().into();
+        style.size.height = if self.0.read(cx).buffer.multi_line() {
+            relative(1.).into()
+        } else {
+            window.line_height().into()
+        };
         (window.request_layout(style, [], cx), ())
     }
 
@@ -457,41 +658,70 @@ impl Element for TextElement {
             None => vec![run],
         };
         let font_size = style.font_size.to_pixels(window.rem_size());
-        let line = window
+        let line_height = window.line_height();
+        let wrap_width = buffer
+            .multi_line()
+            .then_some(bounds.size.width - CURSOR_WIDTH);
+        // Text that fails to shape is left blank rather than taking the app down.
+        let lines = window
             .text_system()
-            .shape_line(text, font_size, &runs, None);
+            .shape_text(text.clone(), font_size, &runs, wrap_width, None)
+            .map(|lines| lines.into_vec())
+            .unwrap_or_default();
+        let layout = ShapedText::new(text, lines, line_height);
 
         // Scroll as little as possible to show the cursor, and never past the end of the text.
-        let cursor_x = line.x_for_index(buffer.cursor());
-        let visible = bounds.size.width - CURSOR_WIDTH;
-        let scroll_x = input
-            .scroll_x
-            .min((line.width - visible).max(px(0.)))
-            .max(cursor_x - visible)
-            .min(cursor_x);
-        let left = bounds.left() - scroll_x;
+        let width = layout
+            .lines
+            .iter()
+            .fold(px(0.), |width, line| width.max(line.width()));
+        let height = line_height * layout.rows.len();
+        let cursor = layout.position_for_offset(buffer.cursor());
+        let mut scroll = point(
+            input
+                .scroll
+                .x
+                .min(width + CURSOR_WIDTH - bounds.size.width)
+                .max(px(0.)),
+            input.scroll.y.min(height - bounds.size.height).max(px(0.)),
+        );
+        if input.scroll_to_cursor {
+            scroll.x = scroll
+                .x
+                .max(cursor.x + CURSOR_WIDTH - bounds.size.width)
+                .min(cursor.x);
+            scroll.y = scroll
+                .y
+                .max(cursor.y + line_height - bounds.size.height)
+                .min(cursor.y);
+        }
+        let origin = bounds.origin - scroll;
 
         let player = cx.theme().players().local();
         let selection = buffer.selection();
-        let selection = (!selection.is_empty()).then(|| {
-            fill(
-                Bounds::from_corners(
-                    point(left + line.x_for_index(selection.start), bounds.top()),
-                    point(left + line.x_for_index(selection.end), bounds.bottom()),
-                ),
-                player.selection,
-            )
-        });
+        let selection = (layout.rows.iter().enumerate())
+            .filter_map(|(ix, row)| {
+                let start = selection.start.max(row.range.start);
+                let end = selection.end.min(row.range.end);
+                let top = origin.y + line_height * ix;
+                (start < end).then(|| {
+                    fill(
+                        Bounds::from_corners(
+                            point(origin.x + layout.x(row, start), top),
+                            point(origin.x + layout.x(row, end), top + line_height),
+                        ),
+                        player.selection,
+                    )
+                })
+            })
+            .collect();
         let cursor = fill(
-            Bounds::new(
-                point(left + cursor_x, bounds.top()),
-                size(CURSOR_WIDTH, bounds.size.height),
-            ),
+            Bounds::new(origin + cursor, size(CURSOR_WIDTH, line_height)),
             player.cursor,
         );
         PrepaintState {
-            line,
-            scroll_x,
+            layout: Rc::new(layout),
+            scroll,
             selection,
             cursor,
         }
@@ -513,29 +743,25 @@ impl Element for TextElement {
             ElementInputHandler::new(bounds, self.0.clone()),
             cx,
         );
-        if let Some(selection) = prepaint.selection.take() {
+        for selection in prepaint.selection.drain(..) {
             window.paint_quad(selection);
         }
-        let origin = point(bounds.left() - prepaint.scroll_x, bounds.top());
-        // A line that fails to paint is left blank rather than taking the app down.
-        prepaint
-            .line
-            .paint(
-                origin,
-                window.line_height(),
-                TextAlign::Left,
-                None,
-                window,
-                cx,
-            )
-            .ok();
+        let line_height = window.line_height();
+        let mut origin = bounds.origin - prepaint.scroll;
+        for line in &prepaint.layout.lines {
+            // A line that fails to paint is left blank rather than taking the app down.
+            line.paint(origin, line_height, TextAlign::Left, None, window, cx)
+                .ok();
+            origin.y += line.size(line_height).height;
+        }
         if focus_handle.is_focused(window) {
             window.paint_quad(prepaint.cursor.clone());
         }
         self.0.update(cx, |input, _| {
-            input.last_layout = Some(prepaint.line.clone());
+            input.last_layout = Some(prepaint.layout.clone());
             input.last_bounds = Some(bounds);
-            input.scroll_x = prepaint.scroll_x;
+            input.scroll = prepaint.scroll;
+            input.scroll_to_cursor = false;
         });
     }
 }
