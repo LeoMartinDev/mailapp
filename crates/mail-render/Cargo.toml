@@ -12,9 +12,17 @@ blitz-dom.workspace = true
 blitz-html.workspace = true
 blitz-paint.workspace = true
 blitz-traits.workspace = true
+data-url.workspace = true
 futures.workspace = true
 gpui.workspace = true
 image.workspace = true
 
 [dev-dependencies]
+base64.workspace = true
 gpui_platform.workspace = true
+mail-parser.workspace = true
+
+[[example]]
+name = "corpus"
+# Its tests check how it reads the fixture emails.
+test = true

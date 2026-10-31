@@ -3,13 +3,16 @@
 
 use std::sync::{Arc, mpsc};
 use std::thread;
+use std::time::{Duration, Instant};
 
 use anyrender::render_to_buffer;
 use anyrender_vello_cpu::VelloCpuImageRenderer;
 use blitz_dom::{DocumentConfig, Point};
 use blitz_html::HtmlDocument;
 use blitz_paint::paint_scene;
+use blitz_traits::net::{NetHandler, NetProvider, Request};
 use blitz_traits::shell::{ColorScheme, Viewport};
+use data_url::DataUrl;
 use futures::channel::mpsc::{UnboundedReceiver, UnboundedSender, unbounded};
 use gpui::RenderImage;
 use image::{Frame, RgbaImage};
@@ -32,13 +35,21 @@ pub(crate) enum Command {
     },
 }
 
+/// Each event carries the time its work took on this thread.
 pub(crate) enum Event {
+    /// The HTML is parsed, once, before any command is handled.
+    Parsed { took: Duration },
     /// The document's height in CSS pixels.
-    Layout { generation: u64, height: f32 },
+    Layout {
+        generation: u64,
+        height: f32,
+        took: Duration,
+    },
     Band {
         generation: u64,
         band: usize,
         image: Arc<RenderImage>,
+        took: Duration,
     },
 }
 
@@ -54,7 +65,14 @@ pub(crate) fn spawn(html: String) -> (mpsc::Sender<Command>, UnboundedReceiver<E
 }
 
 fn run(html: &str, commands: mpsc::Receiver<Command>, events: UnboundedSender<Event>) {
+    let started = Instant::now();
     let mut document = document(html);
+    let parsed = Event::Parsed {
+        took: started.elapsed(),
+    };
+    if events.unbounded_send(parsed).is_err() {
+        return;
+    }
     while let Ok(command) = commands.recv() {
         let mut batch: Vec<_> = [command].into_iter().chain(commands.try_iter()).collect();
         // Commands sent before the latest layout are stale, e.g. while the window is resized.
@@ -63,6 +81,7 @@ fn run(html: &str, commands: mpsc::Receiver<Command>, events: UnboundedSender<Ev
             .rposition(|command| matches!(command, Command::Layout { .. }))
             .unwrap_or(0);
         for command in batch.drain(latest..) {
+            let started = Instant::now();
             let event = match command {
                 Command::Layout {
                     generation,
@@ -72,13 +91,18 @@ fn run(html: &str, commands: mpsc::Receiver<Command>, events: UnboundedSender<Ev
                 } => {
                     document.set_viewport(Viewport::new(width, height, scale, ColorScheme::Light));
                     document.resolve(0.);
-                    let height = document.root_element().scroll_height();
-                    Event::Layout { generation, height }
+                    Event::Layout {
+                        generation,
+                        height: document.root_element().scroll_height(),
+                        took: started.elapsed(),
+                    }
                 }
+                // Fields are evaluated in order, so `took` includes the painting.
                 Command::Paint { generation, band } => Event::Band {
                     generation,
                     band,
                     image: paint_band(&mut document, band),
+                    took: started.elapsed(),
                 },
             };
             if events.unbounded_send(event).is_err() {
@@ -88,10 +112,32 @@ fn run(html: &str, commands: mpsc::Receiver<Command>, events: UnboundedSender<Ev
     }
 }
 
-/// No net provider is given, so Blitz uses its no-op one: remote images, stylesheets and fonts are
-/// never fetched.
 fn document(html: &str) -> HtmlDocument {
-    HtmlDocument::from_html(html, DocumentConfig::default())
+    let config = DocumentConfig {
+        net_provider: Some(Arc::new(DataUrls)),
+        ..DocumentConfig::default()
+    };
+    HtmlDocument::from_html(html, config)
+}
+
+/// Serves `data:` URLs, which is how inline (`cid:`) images reach the document, and nothing else:
+/// remote images, stylesheets and fonts are never fetched.
+struct DataUrls;
+
+impl NetProvider for DataUrls {
+    fn fetch(&self, _: usize, request: Request, handler: Box<dyn NetHandler>) {
+        if let Ok(url) = DataUrl::process(request.url.as_str())
+            && let Ok((bytes, _)) = url.decode_to_vec()
+        {
+            handler.bytes(request.url.into(), bytes.into());
+        }
+    }
+
+    // Blitz holds rendering while a stylesheet from the `<head>` is pending, unless the provider
+    // is a no-op. Ours answers at once or never, so nothing is worth waiting for.
+    fn is_noop(&self) -> bool {
+        true
+    }
 }
 
 fn paint_band(document: &mut HtmlDocument, band: usize) -> Arc<RenderImage> {
@@ -161,6 +207,16 @@ mod tests {
         }
     }
 
+    /// Spawns a worker, which reports the parsing first.
+    fn start(html: &str) -> Worker {
+        let mut worker = spawn(html.into());
+        assert!(matches!(
+            block_on(worker.1.next()),
+            Some(Event::Parsed { .. })
+        ));
+        worker
+    }
+
     fn has_ink(image: &RenderImage) -> bool {
         let pixels = image.as_bytes(0).unwrap();
         pixels.chunks(4).any(|pixel| pixel != [255; 4])
@@ -168,7 +224,7 @@ mod tests {
 
     #[test]
     fn renders_the_sample() {
-        let mut worker = spawn(SAMPLE.into());
+        let mut worker = start(SAMPLE);
         let height = layout(&mut worker, 1, 800., 1.);
         assert!((500. ..5000.).contains(&height), "height: {height}");
         let band = first_band(&mut worker, 1);
@@ -186,13 +242,33 @@ mod tests {
 
     #[test]
     fn never_fetches_remote_resources() {
-        let html = r#"<link rel="stylesheet" href="https://example.com/style.css">
-            <img src="https://example.com/pixel.png" width="1" height="1"><p>Hello</p>"#;
-        assert!(document(html).net_provider.is_noop());
+        struct Unreachable;
+        impl NetHandler for Unreachable {
+            fn bytes(self: Box<Self>, url: String, _: blitz_traits::net::Bytes) {
+                panic!("fetched {url}");
+            }
+        }
+        let url = "https://example.com/pixel.png".parse().unwrap();
+        DataUrls.fetch(0, Request::get(url), Box::new(Unreachable));
 
         // Nor does it wait for them before painting.
-        let mut worker = spawn(html.into());
+        let html = r#"<link rel="stylesheet" href="https://example.com/style.css">
+            <img src="https://example.com/pixel.png" width="1" height="1"><p>Hello</p>"#;
+        let mut worker = start(html);
         layout(&mut worker, 1, 400., 1.);
         assert!(has_ink(&first_band(&mut worker, 1)));
+    }
+
+    #[test]
+    fn draws_data_url_images() {
+        // A 1×1 red PNG, stretched over the top-left corner.
+        let html = r#"<body style="margin: 0"><img width="40" height="40"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP4z8AAAAMBAQD3A0FDAAAAAElFTkSuQmCC">"#;
+        let mut worker = start(html);
+        layout(&mut worker, 1, 400., 1.);
+        let band = first_band(&mut worker, 1);
+        let at = (20 * 400 + 20) * 4;
+        // BGRA.
+        assert_eq!(band.as_bytes(0).unwrap()[at..at + 4], [0, 0, 255, 255]);
     }
 }

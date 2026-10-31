@@ -3,6 +3,7 @@
 
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, mpsc};
+use std::time::Duration;
 
 use futures::StreamExt as _;
 use gpui::{
@@ -19,6 +20,13 @@ const CACHE_BYTES: f32 = 64. * 1024. * 1024.;
 /// Emitted once, when the first screenful of the mail is drawn.
 pub struct FirstPaint;
 
+/// Emitted when the Blitz thread finishes parsing, a layout or a band, with the time it took there.
+pub enum Rendered {
+    Parse { took: Duration },
+    Layout { height: Pixels, took: Duration },
+    Band { took: Duration },
+}
+
 /// A mail body rendered by Blitz, filling its parent and scrolling on its own.
 pub struct MailBody {
     worker: mpsc::Sender<Command>,
@@ -32,6 +40,7 @@ pub struct MailBody {
     requested: HashSet<usize>,
     scroll_top: Pixels,
     max_scroll_top: Pixels,
+    missing: usize,
     painted: bool,
 }
 
@@ -62,22 +71,50 @@ impl MailBody {
             requested: HashSet::new(),
             scroll_top: px(0.),
             max_scroll_top: px(0.),
+            missing: 0,
             painted: false,
         }
     }
 
+    /// Scrolls down by `delta`, or up if it is negative, within the mail. Returns whether it moved.
+    pub fn scroll_by(&mut self, delta: Pixels, cx: &mut Context<Self>) -> bool {
+        let top = (self.scroll_top + delta).clamp(px(0.), self.max_scroll_top);
+        if top == self.scroll_top {
+            return false;
+        }
+        self.scroll_top = top;
+        cx.notify();
+        true
+    }
+
+    /// Visible bands left blank in the latest frame, because they were still being painted.
+    pub fn missing_bands(&self) -> usize {
+        self.missing
+    }
+
     fn receive(&mut self, event: Event, cx: &mut Context<Self>) {
         match event {
-            Event::Layout { generation, height } if generation == self.generation => {
+            Event::Parsed { took } => cx.emit(Rendered::Parse { took }),
+            Event::Layout {
+                generation,
+                height,
+                took,
+            } if generation == self.generation => {
                 self.height = Some(px(height));
+                cx.emit(Rendered::Layout {
+                    height: px(height),
+                    took,
+                });
             }
             Event::Band {
                 generation,
                 band,
                 image,
+                took,
             } if generation == self.generation => {
                 self.requested.remove(&band);
                 self.bands.insert(band, image);
+                cx.emit(Rendered::Band { took });
             }
             // An answer about a layout that has since been replaced.
             _ => return,
@@ -164,7 +201,8 @@ impl MailBody {
                 Some((band_bounds, self.bands.get(&band)?.clone()))
             })
             .collect();
-        if !self.painted && ready.len() == visible.len() {
+        self.missing = visible.len() - ready.len();
+        if !self.painted && self.missing == 0 {
             self.painted = true;
             cx.emit(FirstPaint);
         }
@@ -178,6 +216,7 @@ impl MailBody {
 }
 
 impl EventEmitter<FirstPaint> for MailBody {}
+impl EventEmitter<Rendered> for MailBody {}
 
 impl Render for MailBody {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
@@ -202,11 +241,7 @@ impl Render for MailBody {
                     }
                     let delta = event.delta.pixel_delta(window.line_height()).y;
                     scrolled
-                        .update(cx, |body, cx| {
-                            body.scroll_top =
-                                (body.scroll_top - delta).clamp(px(0.), body.max_scroll_top);
-                            cx.notify();
-                        })
+                        .update(cx, |body, cx| body.scroll_by(-delta, cx))
                         .ok();
                 });
             },
