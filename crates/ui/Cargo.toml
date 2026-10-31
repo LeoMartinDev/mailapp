@@ -11,4 +11,5 @@ gpui_platform.workspace = true
 mailapp-core.workspace = true
 mailapp-mail-render.workspace = true
 theme.workspace = true
+unicode-segmentation.workspace = true
 zed_ui.workspace = true

@@ -1,6 +1,7 @@
 //! Desktop UI: design system, screens and their view-models (GPUI). Talks to the core only: sends actions, runs queries, listens to events.
 
 mod demo;
+mod design;
 
 use std::borrow::Cow;
 
@@ -18,7 +19,7 @@ pub fn run() {
             }),
             ..Default::default()
         };
-        cx.open_window(options, |_, cx| cx.new(|_| demo::Demo))
+        cx.open_window(options, |_, cx| cx.new(demo::Demo::new))
             .expect("failed to open the main window");
         cx.on_window_closed(|cx, _| cx.quit()).detach();
         cx.activate(true);
@@ -43,6 +44,7 @@ fn init(cx: &mut App) {
         }),
         cx,
     );
+    design::text_input::bind_keys(cx);
 }
 
 struct Settings {

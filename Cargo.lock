@@ -2730,6 +2730,7 @@ dependencies = [
  "mailapp-mail-render",
  "theme",
  "ui",
+ "unicode-segmentation",
 ]
 
 [[package]]
