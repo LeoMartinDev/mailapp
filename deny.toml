@@ -2,6 +2,10 @@
 # Each entry lists the only crates allowed to depend on that crate directly.
 # A PR that adds an infrastructure or UI library (rusqlite, async-imap, gpui…) adds its rule here.
 
+# The rules guard shipped code; tests may wire adapters together (IMAP into SQLite).
+[graph]
+exclude-dev = true
+
 [bans]
 deny = [
     { crate = "mailapp-imap", wrappers = ["mailapp"], reason = "infrastructure: only the mailapp executable wires it to the core" },

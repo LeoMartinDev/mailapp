@@ -13,3 +13,8 @@ mailapp-core.workspace = true
 rustls-platform-verifier = "0.7.1"
 tokio = { version = "1.54.1", features = ["net"] }
 tokio-rustls = { version = "0.26.6", default-features = false, features = ["ring", "tls12"] }
+
+[dev-dependencies]
+mailapp-sqlite.workspace = true
+tempfile = "3.27.0"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
